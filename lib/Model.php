@@ -27,7 +27,7 @@ class Model {
 		
 		return $value;
 	}
-
+	
 	public function __set($name, $value = null) {
 		$method = 'set_' . $name;
 		if (method_exists($this, $method)) {
@@ -64,7 +64,7 @@ class Model {
 	public function to_array() {
 		return (array) $this->_data;
 	}
-
+	
 	public function to_json() {
 		return json_encode($this->to_array());
 	}
@@ -108,6 +108,9 @@ class DbModel extends Model {
 	 * Static methods
 	 */
 	public static function table_name() {
+		if (is_null(static::$table_name)) {
+			static::$table_name = Inflector::tableize(get_called_class());
+		}
 		return DB::getPrefix() . static::$table_name;
 	}
 	
@@ -231,10 +234,10 @@ class DbModel extends Model {
 		$this->_run_callback('before_create');
 		
 		if (in_array('created_at', $table_fields)) {
-			$this->_data->created_at = date('Y-m-d H:i:s');
+			$this->_data['created_at'] = date('Y-m-d H:i:s');
 		}
 		if (in_array('updated_at', $table_fields)) {
-			$this->_data->updated_at = date('Y-m-d H:i:s');
+			$this->_data['updated_at'] = date('Y-m-d H:i:s');
 		}
 		
 		foreach ($this->_data as $f=>$v) {
@@ -268,7 +271,7 @@ class DbModel extends Model {
 		$this->_run_callback('before_update');
 		
 		if (in_array('updated_at', $table_fields)) {
-			$this->_data->updated_at = date('Y-m-d H:i:s');
+			$this->_data['updated_at'] = date('Y-m-d H:i:s');
 		}
 		
 		foreach ($this->_data as $f=>$v) {

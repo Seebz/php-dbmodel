@@ -3,6 +3,7 @@
 
 
 // Inclusion des fichiers de la librairie
+require_once 'lib/Inflector.php';
 require_once 'lib/DB.php';
 require_once 'lib/Model.php';
 
@@ -24,19 +25,8 @@ DB::Construct(array(
 
 // Déclaration d'un Model
 // (à placer dans un fichier spécifique)
-class Book extends DbModel {
-	static $table_name  = 'books';
-	static $primary_key = 'book_id';
-	
-	static $before_save = 'before_save_fct';
-	public function before_save_fct() {
-		echo '>>> BEFORE-SAVE' . '<br>';
-	}
-	
-	static $after_save = 'after_save_fct';
-	public function after_save_fct() {
-		echo '>>> AFTER-SAVE' . '<br>';
-	}
+class Author extends DbModel {
+	static $primary_key = 'author_id';
 }
 
 
@@ -44,16 +34,20 @@ class Book extends DbModel {
 // C'est parti !
 echo '<pre>';
 
-$book = Book::find_first();
+$name = 'Sébastien';
 
-echo 'Avant: ' . $book->name . '<br>';
+$author = Author::find_first(array(
+	'conditions' => sprintf("name='%s'", DB::escape($name)),
+));
 
-$book->name = 'New book name';
+if (!$author) {
+	$author = new Author(array(
+		'name' => 'Sébastien'
+	));
+	$author->save();
+}
 
-echo 'Apres: ' . $book->name . '<br>';
-
-$book->save();
-
+print_r( $author->to_array() );
 
 
 ?>
