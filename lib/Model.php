@@ -83,6 +83,12 @@ class Model {
 		return $this->_data[ $name ] = $value;
 	}
 	
+	public function update_attributes($data = array()) {
+		foreach($data as $key=>$value) {
+			$this->{$key} = $value;
+		}
+	}
+	
 	public function to_array() {
 		return (array) $this->_data;
 	}
