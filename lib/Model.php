@@ -159,12 +159,13 @@ class DbModel extends Model {
 	
 	// Contiendra les champs existants en DB
 	protected static $_table_fields = array();
+	
 	// Permettra de savoir si l'objet existe en DB
 	protected $_exists = false;
 	
 	
 	
-	/*
+	/**
 	 * Static methods
 	 */
 	public static function table_prefix() {
@@ -268,7 +269,7 @@ class DbModel extends Model {
 	
 	
 	
-	/*
+	/**
 	 * Magical methods
 	 */
 	public function __construct($data = array(), $exists = false) {
@@ -278,8 +279,8 @@ class DbModel extends Model {
 	
 	
 	
-	/*
-	 * Instance methods
+	/**
+	 * Getters/Setters
 	 */
 	public function get_pk() {
 		return $this->_data[ static::primary_key() ];
@@ -289,6 +290,11 @@ class DbModel extends Model {
 		return $this->get_pk();
 	}
 	
+	
+	
+	/**
+	 * Instance methods
+	 */
 	public function validate() {
 		
 		$this->_run_callback('before_validate');
@@ -407,7 +413,7 @@ class DbModel extends Model {
 	
 	
 	
-	/*
+	/**
 	 * Protected Methods
 	 */
 	protected function _run_callback($name) {
