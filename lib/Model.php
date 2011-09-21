@@ -111,7 +111,7 @@ class Model {
 	}
 	
 	public function is_invalid() {
-		return !$this->is_invalid();
+		return !$this->is_valid();
 	}
 	
 	public function get_errors() {
