@@ -8,9 +8,10 @@ if (!defined('PHP_VERSION_ID') || PHP_VERSION_ID < 50300) {
 
 
 // Inclusion des fichiers de la librairie
-require_once __DIR__ . '/lib/Inflector.php';
 require_once __DIR__ . '/lib/DB.php';
 require_once __DIR__ . '/lib/Model.php';
+require_once __DIR__ . '/lib/Validator.php';
+require_once __DIR__ . '/lib/Inflector.php';
 
 
 ?>

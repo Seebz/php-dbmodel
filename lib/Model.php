@@ -63,6 +63,7 @@ class Model {
 				$v = '[Object '. get_class($v) .']';
 			$out[] = sprintf("%-{$kLength}s : %s", $k, $v);
 		}
+		$out[] = '';
 		
 		return implode(PHP_EOL, $out);
 	}
@@ -90,6 +91,33 @@ class Model {
 		return json_encode($this->to_array());
 	}
 	
+	
+	
+	/**
+	 * Validations
+	 */
+	static $validations = array();
+	
+	protected $_validator = null;
+	protected function _getValidator() {
+		if (is_null($this->_validator)) {
+			$this->_validator = new Validator($this);
+		}
+		return $this->_validator;
+	}
+	
+	public function is_valid() {
+		return $this->_getValidator()->is_valid();
+	}
+	
+	public function is_invalid() {
+		return !$this->is_invalid();
+	}
+	
+	public function get_errors() {
+		return $this->_getValidator()->get_errors();
+	}
+	
 }
 
 
@@ -106,17 +134,20 @@ class DbModel extends Model {
 	
 	
 	// Callbacks
-	static $before_create  = array();
-	static $after_create   = array();
+	static $before_validate = array();
+	static $after_validate  = array();
 	
-	static $before_update  = array();
-	static $after_update   = array();
+	static $before_create   = array();
+	static $after_create    = array();
 	
-	static $before_save    = array();
-	static $after_save     = array();
+	static $before_update   = array();
+	static $after_update    = array();
 	
-	static $before_destroy = array();
-	static $after_destroy  = array();
+	static $before_save     = array();
+	static $after_save      = array();
+	
+	static $before_destroy  = array();
+	static $after_destroy   = array();
 	
 	
 	// Contiendra les champs existants en DB
@@ -236,14 +267,28 @@ class DbModel extends Model {
 		return $this->_data[ static::$primary_key ];
 	}
 	
-	public function save() {
+	public function validate() {
+		
+		$this->_run_callback('before_validate');
+		
+		$ret = $this->is_valid();
+		
+		$this->_run_callback('after_validate');
+		
+		return $ret;
+	}
+	
+	public function save($validate = true) {
+		if ($validate && !$this->validate()) {
+			return false;
+		}
 		
 		$this->_run_callback('before_save');
 		
 		if ($this->_exists) {
-			$ret = $this->update();
+			$ret = $this->update(false);
 		} else {
-			$ret = $this->create();
+			$ret = $this->create(false);
 		}
 		
 		$this->_run_callback('after_save');
@@ -251,7 +296,10 @@ class DbModel extends Model {
 		return $ret;
 	}
 	
-	public function create() {
+	public function create($validate = true) {
+		if ($validate && !$this->validate()) {
+			return false;
+		}
 		$table_fields = static::table_fields();
 		
 		$this->_run_callback('before_create');
@@ -288,7 +336,10 @@ class DbModel extends Model {
 		return (isset($ret) ? $ret : null);
 	}
 	
-	public function update() {
+	public function update($validate = true) {
+		if ($validate && !$this->validate()) {
+			return false;
+		}
 		$table_fields = static::table_fields();
 		
 		$this->_run_callback('before_update');
@@ -343,7 +394,7 @@ class DbModel extends Model {
 			if (is_callable($callback)) {
 				call_user_func($callback, $this);
 			} elseif (is_string($callback) && method_exists($this, $callback)) {
-				$this->{$callback}($this);
+				call_user_func(array($this, $callback), $this);
 			} else {
 				$class  = get_class($this);
 				$method = end(explode('_', $name));

@@ -24,7 +24,19 @@ DB::Construct(array(
 // Déclaration d'un Model
 // (à placer dans un fichier spécifique)
 class Author extends DbModel {
+	
 	static $primary_key = 'author_id';
+	
+	static $validations = array(
+		'name' => array(
+			'presence_of' => array('message' => "{FIELD_NAME} est obligatoire."),
+			'length_of'   => array(
+					array('message' => "{FIELD_NAME} est trop court.", 'min' => 5),
+					array('message' => "{FIELD_NAME} est trop long.",  'max' => 15),
+				),
+		),
+	);
+	
 }
 
 
@@ -33,8 +45,14 @@ class Author extends DbModel {
 echo '<pre>';
 
 $author = Author::find_first();
-echo $author;
 
+$author->name = 'aa';
+//$author->name = '';
+
+//var_dump( $author->is_valid() );
+var_dump( $author->save() );
+
+print_r( $author->errors );
 
 
 ?>
