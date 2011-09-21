@@ -12,7 +12,7 @@ require_once '../DbModel.php';
 DB::Construct(array(
 	'host'     => 'localhost',
 	'user'     => 'root',
-	'pass'     => 'root',
+	'pass'     => '',
 	'database' => 'test',
 	'prefix'   => '',
 	'charset'  => 'utf8',

@@ -129,8 +129,9 @@ class Model {
  */
 class DbModel extends Model {
 	
-	static $table_name  = null;
-	static $primary_key = 'id'; 
+	static $table_prefix = null;
+	static $table_name   = null;
+	static $primary_key  = 'id'; 
 	
 	
 	// Callbacks
@@ -160,11 +161,22 @@ class DbModel extends Model {
 	/*
 	 * Static methods
 	 */
+	public static function table_prefix() {
+		if (is_null(static::$table_prefix)) {
+			static::$table_prefix = DB::getPrefix();
+		}
+		return static::$table_prefix;
+	}
+	
 	public static function table_name() {
 		if (is_null(static::$table_name)) {
 			static::$table_name = Inflector::tableize(get_called_class());
 		}
-		return DB::getPrefix() . static::$table_name;
+		return static::table_prefix() . static::$table_name;
+	}
+	
+	public static function primary_key() {
+		return static::$primary_key;
 	}
 	
 	public static function table_fields() {
@@ -183,7 +195,7 @@ class DbModel extends Model {
 	public static function get($id) {
 		return self::find_first(array(
 			'conditions' => sprintf("%s = '%s'",
-					static::$primary_key,
+					static::primary_key(),
 					DB::escape($id)
 				),
 		));
@@ -263,8 +275,12 @@ class DbModel extends Model {
 	/*
 	 * Instance methods
 	 */
-	public function getPkValue() {
-		return $this->_data[ static::$primary_key ];
+	public function get_pk() {
+		return $this->_data[ static::primary_key() ];
+	}
+	
+	public function get_id() {
+		return $this->get_pk();
 	}
 	
 	public function validate() {
@@ -326,7 +342,7 @@ class DbModel extends Model {
 			
 			$ret = DB::query($query);
 			if ($ret) {
-				$this->_data[ static::$primary_key ] = $ret;
+				$this->_data[ static::primary_key() ] = $ret;
 				$this->_exists = true;
 			}
 		}
@@ -357,8 +373,8 @@ class DbModel extends Model {
 			$query = sprintf("UPDATE %s SET %s WHERE %s='%s'",
 				static::table_name(),
 				implode(', ', $sets),
-				static::$primary_key,
-				$this->getPkValue()
+				static::primary_key(),
+				$this->get_pk()
 			);
 			$ret = DB::query($query);
 		}
@@ -374,8 +390,8 @@ class DbModel extends Model {
 		
 		$ret = sprintf("DELETE FROM %s WHERE %s='%s'",
 				static::table_name(),
-				static::$primary_key,
-				$this->getPkValue()
+				static::primary_key(),
+				$this->get_pk()
 		);
 		
 		$this->_run_callback('after_destroy');
