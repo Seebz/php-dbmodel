@@ -32,20 +32,9 @@ class Author extends DbModel {
 // C'est parti !
 echo '<pre>';
 
-$name = 'Sébastien';
+$author = Author::find_first();
+echo $author;
 
-$author = Author::find_first(array(
-	'conditions' => sprintf("name='%s'", DB::escape($name)),
-));
-
-if (!$author) {
-	$author = new Author(array(
-		'name' => 'Sébastien'
-	));
-	$author->save();
-}
-
-print_r( $author->to_array() );
 
 
 ?>

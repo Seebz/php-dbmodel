@@ -14,6 +14,7 @@ class Model {
 	}
 	
 	
+	
 	/**
 	 * Magical Methods
 	 */
@@ -46,6 +47,26 @@ class Model {
     public function __unset($name) {
 		unset($this->_data[$name]);
 	}	
+	
+	public function __toString() {
+		$kLength = 0;
+		foreach(array_keys($this->_data) as $k) {
+			$l = strlen($k);
+			if ($l>$kLength) { $kLength = $l; }
+		}
+		$out = array( sprintf('[%s Model]', get_class($this)) );
+		foreach($this->_data as $k => $v) {
+			if ($v === true)	$v = 'True';
+			if ($v === false)	$v = 'False';
+			if ($v === null)	$v = 'Null';
+			if (is_object($v))
+				$v = '[Object '. get_class($v) .']';
+			$out[] = sprintf("%-{$kLength}s : %s", $k, $v);
+		}
+		
+		return implode(PHP_EOL, $out);
+	}
+	
 	
 	
 	/**
@@ -103,7 +124,8 @@ class DbModel extends Model {
 	// Permettra de savoir si l'objet existe en DB
 	protected $_exists = false;
 	
-
+	
+	
 	/*
 	 * Static methods
 	 */
@@ -194,6 +216,7 @@ class DbModel extends Model {
 		
 		return "({$conditions})";
 	}
+	
 	
 	
 	/*
