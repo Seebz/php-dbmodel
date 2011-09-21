@@ -3,9 +3,7 @@
 
 
 // Inclusion des fichiers de la librairie
-require_once 'lib/Inflector.php';
-require_once 'lib/DB.php';
-require_once 'lib/Model.php';
+require_once '../DbModel.php';
 
 
 
