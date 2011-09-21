@@ -8,8 +8,13 @@
 class Validator {
 	
 	public static $messages = array(
-		'presence_of' => '{FIELD_NAME} is required',
-		'length_of'   => '{FIELD_NAME}',
+		'presence'  => '{FIELD_NAME} is required',
+		'length'    => array(
+				'too_short' => '{FIELD_NAME} is too short (minimum is {MIN})',
+				'too_long'  => '{FIELD_NAME} is too short (minimum is {MAX})',
+			),
+		'inclusion' => '{FIELD_NAME} is not allowed',
+		'exclusion' => '{FIELD_NAME} is not allowed',
 	);
 	
 		
@@ -51,18 +56,56 @@ class Validator {
 	/**
 	 * Validation Methods
 	 */
-	public function validates_presence_of($field_name, $field_value, $message, $args = array()) {
+	public function validates_presence($field_name, $field_value, $message, $args = array()) {
 		if (empty($field_value)) {
 			return $this->_errors[ $field_name ] = $this->_format_message($field_name, $message, $args);
 		}
 	}
 	
-	public function validates_length_of($field_name, $field_value, $message, $args = array()) {
+	public function validates_length($field_name, $field_value, $message, $args = array()) {
 		$args = (array) $args;
 		if (isset($args['min']) && strlen($field_value) < $args['min']) {
+			$message = (is_array($message) && isset($message['too_short']) ? $message['too_short'] : $message);
 			return $this->_errors[ $field_name ] = $this->_format_message($field_name, $message, $args);
 		}
 		if (isset($args['max']) && strlen($field_value) > $args['max']) {
+			$message = (is_array($message) && isset($message['too_long']) ? $message['too_long'] : $message);
+			return $this->_errors[ $field_name ] = $this->_format_message($field_name, $message, $args);
+		}
+	}
+	
+	public function validates_inclusion($field_name, $field_value, $message, $args = array()) {
+		$defaults = array('in' => array(), 'case' => false);
+		$args = (array) $args + $defaults;
+		
+		$in = (array) $args['in'];
+		if ($args['case']) {
+			// http://php.net/manual/en/function.in-array.php#101976
+			$in = array_map(function($x){return (string) $x;}, $in);
+			$valid = in_array((string) $field_value, $in, true);
+		} else {
+			$in = array_map(function($x){return strtolower($x);}, $in);
+			$valid = in_array(strtolower($field_value), $in, true);
+		}
+		if (!$valid) {
+			return $this->_errors[ $field_name ] = $this->_format_message($field_name, $message, $args);
+		}
+	}
+	
+	public function validates_exclusion($field_name, $field_value, $message, $args = array()) {
+		$defaults = array('in' => array(), 'case' => false);
+		$args = (array) $args + $defaults;
+		
+		$in = (array) $args['in'];
+		if ($args['case']) {
+			// http://php.net/manual/en/function.in-array.php#101976
+			$in = array_map(function($x){return (string) $x;}, $in);
+			$valid = !in_array((string) $field_value, $in, true);
+		} else {
+			$in = array_map(function($x){return strtolower($x);}, $in);
+			$valid = !in_array(strtolower($field_value), $in, true);
+		}
+		if (!$valid) {
 			return $this->_errors[ $field_name ] = $this->_format_message($field_name, $message, $args);
 		}
 	}
@@ -93,18 +136,6 @@ class Validator {
 		$rules = (array) $rules;
 		foreach($rules as $rule => $params) {
 			$this->_validate_field_by_rule($rule, $field_name, $field_value, $params);
-			
-			/*
-			$method = 'validates_' . $rule;
-			if (method_exists($this, $method)) {
-				
-				$params  = $this->_format_validation_params($field_name, $rules, $params);
-				$message = $params['message'];
-				call_user_func_array(array($this, $method),
-						compact('field_name', 'field_value', 'message', 'params')
-					);
-			}
-			*/
 		}
 	}
 	
@@ -131,12 +162,11 @@ class Validator {
 	}
 	
 	protected function _format_validation_params($field_name, $rule, $params) {
-		
 		if (isset($params[0])) {
 			$params['message'] = $params[0];
 			unset($params[0]);
 		} elseif (!isset($params['message'])) {
-			$params['message'] = static::$messages[ $rule ];
+			$params['message'] = (isset(static::$messages[ $rule ]) ? static::$messages[ $rule ] : '');
 		}
 		
 		return $params;
@@ -149,9 +179,14 @@ class Validator {
 					$message
 				);
 		}
-		
-		// TODO: faire un remplacement des arguments dans le message
-		// ex: arg 'min/max' de `length_of`
+		foreach($args as $key => $value) {
+			if (is_string($value) || is_numeric($value)) {
+				$message = str_replace(sprintf('{%s}', strtoupper($key)),
+						$value,
+						$message
+					);
+			}
+		}
 		
 		return $message;
 	}

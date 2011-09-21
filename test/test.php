@@ -1,6 +1,10 @@
 <?php
 
 
+error_reporting(-1);
+ini_set('display_errors', true);
+
+
 
 // Inclusion des fichiers de la librairie
 require_once '../DbModel.php';
@@ -29,11 +33,15 @@ class Author extends DbModel {
 	
 	static $validations = array(
 		'name' => array(
-			'presence_of' => array('message' => "{FIELD_NAME} est obligatoire."),
-			'length_of'   => array(
-					array('message' => "{FIELD_NAME} est trop court.", 'min' => 5),
-					array('message' => "{FIELD_NAME} est trop long.",  'max' => 15),
+/*
+			'presence'  => array('message' => "{FIELD_NAME} est obligatoire"),
+			'length'    => array(
+					array('message' => "{FIELD_NAME} est trop court (min {MIN} car.)", 'min' => 5),
+					array('message' => "{FIELD_NAME} est trop long", 'max' => 15),
 				),
+			'inclusion' => array('in' => array('John', 'Jean')),
+*/
+			'exclusion' => array('in' => array('Admin', 'Administrator', 'Administrateur')),
 		),
 	);
 	
@@ -46,12 +54,11 @@ echo '<pre>';
 
 $author = Author::find_first();
 
-$author->name = 'aa';
-//$author->name = '';
 
-//var_dump( $author->is_valid() );
-var_dump( $author->save() );
+$author->name = 'admin';
 
+
+var_dump( $author->is_valid() );
 print_r( $author->errors );
 
 
