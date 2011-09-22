@@ -16,7 +16,7 @@ require_once '../DbModel.php';
 DB::Construct(array(
 	'host'     => 'localhost',
 	'user'     => 'root',
-	'pass'     => '',
+	'pass'     => 'root',
 	'database' => 'test',
 	'prefix'   => '',
 	'charset'  => 'utf8',
@@ -40,8 +40,8 @@ class Author extends DbModel {
 					array('message' => "{FIELD_NAME} est trop long", 'max' => 15),
 				),
 			'inclusion' => array('in' => array('John', 'Jean')),
-*/
 			'exclusion' => array('in' => array('Admin', 'Administrator', 'Administrateur')),
+*/
 		),
 	);
 	

@@ -15,6 +15,7 @@ class Validator {
 			),
 		'inclusion' => '{FIELD_NAME} is not allowed',
 		'exclusion' => '{FIELD_NAME} is not allowed',
+		'format'    => '{FIELD_NAME} is not valid',
 	);
 	
 		
@@ -104,6 +105,25 @@ class Validator {
 		} else {
 			$in = array_map(function($x){return strtolower($x);}, $in);
 			$valid = !in_array(strtolower($field_value), $in, true);
+		}
+		if (!$valid) {
+			return $this->_errors[ $field_name ] = $this->_format_message($field_name, $message, $args);
+		}
+	}
+	
+	public function validates_format($field_name, $field_value, $message, $args = array()) {
+		$defaults = array('type' => null, 'regexp' => null);
+		$args = (array) $args + $defaults;
+		
+		if (!$args['type'] && $args['regexp']) {
+			$args['type'] = 'regexp';
+		}
+		
+		$valid = true;
+		switch($args['type']) {
+			case 'email':
+				$valid = filter_var($field_value, FILTER_VALIDATE_EMAIL);
+				break;
 		}
 		if (!$valid) {
 			return $this->_errors[ $field_name ] = $this->_format_message($field_name, $message, $args);
