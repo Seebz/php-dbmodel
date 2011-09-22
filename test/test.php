@@ -42,6 +42,7 @@ class Author extends DbModel {
 			'inclusion' => array('in' => array('John', 'Jean')),
 			'exclusion' => array('in' => array('Admin', 'Administrator', 'Administrateur')),
 */
+			'uniqueness' => array(),
 		),
 		'email' => array(
 			'format' => array('type' => 'email'),
@@ -55,9 +56,12 @@ class Author extends DbModel {
 // C'est parti !
 echo '<pre>';
 
-$author = Author::find_first();
+$author = Author::find_first(array(
+	'conditions' => "name <> 'Tito'",
+));
 
-//$author->email = 'sebastien@seebz.net';
+$author->name  = 'Tito';
+$author->email = 'sebastien@seebz';
 
 var_dump( $author->is_valid() );
 var_dump( $author->errors );

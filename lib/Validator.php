@@ -21,6 +21,7 @@ class Validator {
 				'url'    => '{FIELD_NAME} is not a valid url',
 				'regexp' => '{FIELD_NAME} is not valid',
 			),
+		'uniqueness' => '{FIELD_NAME} must be unique',
 	);
 	
 		
@@ -144,6 +145,19 @@ class Validator {
 				break;
 		}
 		if (!$valid) {
+			return $this->_errors[ $field_name ] = $this->_format_message($field_name, $message, $args);
+		}
+	}
+	
+	public function validates_uniqueness($field_name, $field_value, $message, $args = array()) {
+		$object = $this->_object;
+		$class_name = $this->_class_name;
+		
+		$conditions = array(sprintf("%s = '%s'", $field_name, DB::escape($field_value)));
+		if ($object->get_pk()) {
+			$conditions[] = sprintf("%s <> '%s'", $class_name::primary_key(), DB::escape($object->get_pk()));
+		}
+		if ($class_name::find_first(compact('conditions'))) {
 			return $this->_errors[ $field_name ] = $this->_format_message($field_name, $message, $args);
 		}
 	}
