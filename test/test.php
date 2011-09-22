@@ -16,7 +16,7 @@ require_once '../DbModel.php';
 DB::Construct(array(
 	'host'     => 'localhost',
 	'user'     => 'root',
-	'pass'     => 'root',
+	'pass'     => '',
 	'database' => 'test',
 	'prefix'   => '',
 	'charset'  => 'utf8',
@@ -47,19 +47,19 @@ class Author extends DbModel {
 	
 }
 
+class Book extends DbModel {}
+
 
 
 // C'est parti !
 echo '<pre>';
 
-$author = Author::find_first();
 
+var_dump(array(
+	Author::table_name(),
+	Book::table_name(),
+));
 
-$author->name = 'admin';
-
-
-var_dump( $author->is_valid() );
-print_r( $author->errors );
 
 
 ?>
