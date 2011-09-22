@@ -84,7 +84,7 @@ class Model {
 	}
 	
 	public function update_attributes($data = array()) {
-		foreach($data as $key=>$value) {
+		foreach($data as $key => $value) {
 			$this->{$key} = $value;
 		}
 	}
@@ -133,7 +133,7 @@ class Model {
 /**
  * Classe modèle utilisant la DB
  */
-class DbModel extends Model {
+abstract class DbModel extends Model {
 	
 	static $table_prefix = null;
 	static $table_name   = '';

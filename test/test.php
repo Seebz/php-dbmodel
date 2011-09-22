@@ -43,23 +43,24 @@ class Author extends DbModel {
 			'exclusion' => array('in' => array('Admin', 'Administrator', 'Administrateur')),
 */
 		),
+		'email' => array(
+			'format' => array('type' => 'email'),
+		),
 	);
 	
 }
-
-class Book extends DbModel {}
 
 
 
 // C'est parti !
 echo '<pre>';
 
+$author = Author::find_first();
 
-var_dump(array(
-	Author::table_name(),
-	Book::table_name(),
-));
+//$author->email = 'sebastien@seebz.net';
 
+var_dump( $author->is_valid() );
+var_dump( $author->errors );
 
 
 ?>

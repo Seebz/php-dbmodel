@@ -10,12 +10,17 @@ class Validator {
 	public static $messages = array(
 		'presence'  => '{FIELD_NAME} is required',
 		'length'    => array(
-				'too_short' => '{FIELD_NAME} is too short (minimum is {MIN})',
-				'too_long'  => '{FIELD_NAME} is too short (minimum is {MAX})',
+				'min' => '{FIELD_NAME} is too short (minimum is {MIN})',
+				'max' => '{FIELD_NAME} is too short (minimum is {MAX})',
 			),
 		'inclusion' => '{FIELD_NAME} is not allowed',
 		'exclusion' => '{FIELD_NAME} is not allowed',
-		'format'    => '{FIELD_NAME} is not valid',
+		'format'    => array(
+				'email'  => '{FIELD_NAME} is not a valid email',
+				'ip'     => '{FIELD_NAME} is not a valid ip',
+				'url'    => '{FIELD_NAME} is not a valid url',
+				'regexp' => '{FIELD_NAME} is not valid',
+			),
 	);
 	
 		
@@ -66,11 +71,11 @@ class Validator {
 	public function validates_length($field_name, $field_value, $message, $args = array()) {
 		$args = (array) $args;
 		if (isset($args['min']) && strlen($field_value) < $args['min']) {
-			$message = (is_array($message) && isset($message['too_short']) ? $message['too_short'] : $message);
+			$message = (is_array($message) && isset($message['min']) ? $message['min'] : $message);
 			return $this->_errors[ $field_name ] = $this->_format_message($field_name, $message, $args);
 		}
 		if (isset($args['max']) && strlen($field_value) > $args['max']) {
-			$message = (is_array($message) && isset($message['too_long']) ? $message['too_long'] : $message);
+			$message = (is_array($message) && isset($message['max']) ? $message['max'] : $message);
 			return $this->_errors[ $field_name ] = $this->_format_message($field_name, $message, $args);
 		}
 	}
@@ -123,6 +128,19 @@ class Validator {
 		switch($args['type']) {
 			case 'email':
 				$valid = filter_var($field_value, FILTER_VALIDATE_EMAIL);
+				$message = (is_array($message) && isset($message['email']) ? $message['email'] : $message);
+				break;
+			case 'ip':
+				$valid = filter_var($field_value, FILTER_VALIDATE_EMAIL);
+				$message = (is_array($message) && isset($message['ip']) ? $message['ip'] : $message);
+				break;
+			case 'url':
+				$valid = filter_var($field_value, FILTER_VALIDATE_URL);
+				$message = (is_array($message) && isset($message['url']) ? $message['url'] : $message);
+				break;
+			case 'regexp':
+				$valid = preg_match($args['regexp'], $field_value);
+				$message = (is_array($message) && isset($message['regexp']) ? $message['regexp'] : $message);
 				break;
 		}
 		if (!$valid) {
