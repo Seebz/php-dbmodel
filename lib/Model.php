@@ -200,7 +200,7 @@ class DbModel extends Model {
 	}
 	
 	public static function get($id) {
-		return self::find_first(array(
+		return static::find_first(array(
 			'conditions' => sprintf("%s = '%s'",
 					static::primary_key(),
 					DB::escape($id)
@@ -212,17 +212,24 @@ class DbModel extends Model {
 		$default = array(
 			'fields'     => '*',
 			'source'     => static::table_name(),
+			'join'       => '',
 			'conditions' => '1',
+			'groupby'    => null,
 			'sort'       => 'NULL',
 			'offset'     => null,
 			'page'       => 1,
 		);
 		$options = $options + $default;
 		
-		$query = sprintf('SELECT %s FROM %s WHERE %s ORDER BY %s',
+		$join = (is_array($options['join']) ? implode("\n", $options['join']) : $options['join']);
+		$groupby = (is_null($options['groupby']) ? '' : "GROUP BY {$options['groupby']}");
+		
+		$query = sprintf('SELECT %s FROM %s %s WHERE %s %s ORDER BY %s',
 			(!is_string($options['fields']) ? implode(', ', $options['fields']) : $options['fields']),
 			$options['source'],
-			self::_prepare_conditions($options['conditions']),
+			$join,
+			static::_prepare_conditions($options['conditions']),
+			$groupby,
 			$options['sort']
 		);
 		if ($options['offset'] && is_numeric($options['offset'])) {
