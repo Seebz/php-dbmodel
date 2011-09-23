@@ -215,6 +215,19 @@ abstract class DbModel extends Model {
 		));
 	}
 	
+	public static function count($options = array()) {
+		$default = array(
+			'fields' => static::$primary_key,
+		);
+		$options = $options + $default;
+		if (stripos($options['fields'], 'count') === false) {
+			$options['fields'] = "COUNT({$options['fields']})";
+		}
+		
+		$ret = static::find_first($options);
+		return (int) $ret->{$options['fields']};
+	}
+	
 	public static function find($options = array()) {
 		$default = array(
 			'fields'     => '*',
