@@ -206,7 +206,7 @@ abstract class DbModel extends Model {
 	}
 	
 	public static function get($id) {
-		return static::find_first(array(
+		return static::first(array(
 			'conditions' => sprintf("%s = '%s'",
 					static::primary_key(),
 					DB::escape($id)
@@ -216,14 +216,14 @@ abstract class DbModel extends Model {
 	
 	public static function count($options = array()) {
 		$default = array(
-			'fields' => static::$primary_key,
+			'fields' => static::primary_key(),
 		);
 		$options = $options + $default;
 		if (stripos($options['fields'], 'count') === false) {
 			$options['fields'] = "COUNT({$options['fields']})";
 		}
 		
-		$ret = static::find_first($options);
+		$ret = static::first($options);
 		return (int) $ret->{$options['fields']};
 	}
 	
@@ -280,7 +280,7 @@ abstract class DbModel extends Model {
 		}
 	}
 	public static function find_first($options = array()) {
-		return self::first($options);
+		return static::first($options);
 	}
 	
 	

@@ -16,7 +16,7 @@ require_once '../DbModel.php';
 DB::Construct(array(
 	'host'     => 'localhost',
 	'user'     => 'root',
-	'pass'     => '',
+	'pass'     => 'root',
 	'database' => 'test',
 	'prefix'   => '',
 	'charset'  => 'utf8',
@@ -51,20 +51,17 @@ class Author extends DbModel {
 	
 }
 
+class Book extends DbModel {
+	static $primary_key = 'book_id';
+}
+
 
 
 // C'est parti !
 echo '<pre>';
 
-$author = Author::find_first(array(
-	'conditions' => "name <> 'Tito'",
-));
-
-$author->name  = 'Tito';
-$author->email = 'sebastien@seebz';
-
-var_dump( $author->is_valid() );
-var_dump( $author->errors );
+var_dump( Author::table_fields() );
+var_dump( Book::table_fields() );
 
 
 ?>
