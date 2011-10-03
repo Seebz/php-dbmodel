@@ -32,7 +32,7 @@ class Model {
 	public function __set($name, $value = null) {
 		$method = 'set_' . $name;
 		if (method_exists($this, $method)) {
-			$ret = call_user_func(array($this, $method, $value));
+			$ret = call_user_func(array($this, $method), $value);
 		} else {
 			$ret = $this->write_attribute($name, $value);
 		}
@@ -137,7 +137,7 @@ abstract class DbModel extends Model {
 	
 	static $table_prefix = null;
 	static $table_name   = '';
-	static $primary_key  = 'id'; 
+	static $primary_key  = 'id';
 	
 	
 	// Callbacks
@@ -157,14 +157,12 @@ abstract class DbModel extends Model {
 	static $after_destroy   = array();
 	
 	
-	// Contiendra les champs existants en DB
-	protected static $_table_fields = array();
-	
 	// Permettra de savoir si l'objet existe en DB
 	protected $_exists = false;
 	
 	protected static $_table_prefixes = array();
 	protected static $_table_names    = array();
+	protected static $_table_fields   = array();
 	
 	
 	
@@ -194,16 +192,17 @@ abstract class DbModel extends Model {
 	}
 	
 	public static function table_fields() {
-		if (empty(static::$_table_fields)) {
+		$class_name = get_called_class();
+		if (!isset(static::$_table_fields[ $class_name ])) {
 			$query = sprintf('DESCRIBE %s', static::table_name());
 			
 			$result = DB::query($query);
 			foreach($result as $f) {
 				$fields[] = $f['Field'];
 			}
-			static::$_table_fields = $fields;
+			static::$_table_fields[ $class_name ] = $fields;
 		}
-		return static::$_table_fields;
+		return static::$_table_fields[ $class_name ];
 	}
 	
 	public static function get($id) {
@@ -270,7 +269,7 @@ abstract class DbModel extends Model {
 		return $ret;
 	}
 	
-	public static function find_first($options = array()) {
+	public static function first($options = array()) {
 		$options['offset'] = 1;
 		$options['page']   = 1;
 		
@@ -279,6 +278,9 @@ abstract class DbModel extends Model {
 		if (is_array($ret) && count($ret)) {
 			return $ret[0];
 		}
+	}
+	public static function find_first($options = array()) {
+		return self::first($options);
 	}
 	
 	
