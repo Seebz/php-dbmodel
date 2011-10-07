@@ -10,7 +10,7 @@ class Model {
 	protected $_data = array();
 	
 	public function __construct($data = array()) {
-		$this->_data = $data;
+		$this->update_attributes($data);
 	}
 	
 	
