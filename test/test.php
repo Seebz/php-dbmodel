@@ -16,7 +16,7 @@ require_once '../DbModel.php';
 DB::Construct(array(
 	'host'     => 'localhost',
 	'user'     => 'root',
-	'pass'     => '',
+	'pass'     => 'root',
 	'database' => 'test',
 	'prefix'   => '',
 	'charset'  => 'utf8',
@@ -60,11 +60,13 @@ class Book extends DbModel {
 // C'est parti !
 echo '<pre>';
 
-var_dump( Author::table_fields() );
-var_dump( Book::table_fields() );
-
-var_dump( Author::defaults_values() );
-var_dump( Book::defaults_values() );
+var_dump( Author::get(2) );
+var_dump( Book::first(array(
+	'conditions' => array(
+		'Author_Id' => 1,
+		'name'      => 'New book name',
+	),
+)) );
 
 
 ?>

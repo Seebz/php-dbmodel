@@ -160,12 +160,10 @@ abstract class DbModel extends Model {
 	// Permettra de savoir si l'objet existe en DB
 	protected $_exists = false;
 	
-	protected static $_table_fields   = array();
-	
 	
 	
 	/**
-	 * Static methods
+	 * Static Informations Methods
 	 */
 	static public function table() {
 		return DbTable::load( get_called_class() );
@@ -192,16 +190,24 @@ abstract class DbModel extends Model {
 	}
 	
 	
-	public static function get($id) {
+	
+	/**
+	 * Finder Methods
+	 */
+	static public function find(array $options = array()) {
+		return static::table()->find($options);
+	}
+	static public function all(array $options = array()) {
+		return static::find($options);
+	}
+	
+	static public function get($id) {
 		return static::first(array(
-			'conditions' => sprintf("%s = '%s'",
-					static::primary_key(),
-					DB::escape($id)
-				),
+			'conditions' => array(static::primary_key() => $id),
 		));
 	}
 	
-	public static function count($options = array()) {
+	static public function count($options = array()) {
 		$default = array(
 			'fields' => static::primary_key(),
 		);
@@ -214,79 +220,25 @@ abstract class DbModel extends Model {
 		return (int) $ret->{$options['fields']};
 	}
 	
-	public static function find($options = array()) {
-		$default = array(
-			'fields'     => '*',
-			'source'     => static::table_name(),
-			'join'       => '',
-			'conditions' => '1',
-			'groupby'    => null,
-			'sort'       => 'NULL',
-			'offset'     => null,
-			'page'       => 1,
-		);
-		$options = $options + $default;
-		
-		$join = (is_array($options['join']) ? implode("\n", $options['join']) : $options['join']);
-		$groupby = (is_null($options['groupby']) ? '' : "GROUP BY {$options['groupby']}");
-		
-		$query = sprintf('SELECT %s FROM %s %s WHERE %s %s ORDER BY %s',
-			(!is_string($options['fields']) ? implode(', ', $options['fields']) : $options['fields']),
-			$options['source'],
-			$join,
-			static::_prepare_conditions($options['conditions']),
-			$groupby,
-			$options['sort']
-		);
-		if ($options['offset'] && is_numeric($options['offset'])) {
-			$query .= sprintf(' LIMIT %d,%d',
-				(($options['page']-1) * $options['offset']),
-				$options['offset']
-			);
-		}
-		$ret = DB::query($query);
-		
-		$class_name = get_called_class();
-		if ($class_name) {
-			foreach($ret as &$r) {
-				$r = new $class_name($r, true);
-			}
-		}
-		
-		return $ret;
-	}
-	
-	public static function first($options = array()) {
+	static public function first($options = array()) {
 		$options['offset'] = 1;
 		$options['page']   = 1;
 		
 		$ret = static::find($options);
-		
 		if (is_array($ret) && count($ret)) {
 			return $ret[0];
+		} else {
+			return $ret;
 		}
 	}
-	public static function find_first($options = array()) {
+	static public function find_first($options = array()) {
 		return static::first($options);
-	}
-	
-	
-	protected static function _prepare_conditions($conditions) {
-		if (is_array($conditions)) {
-			$out = array();
-			foreach($conditions as $c) {
-				$out[] = call_user_func(__METHOD__, $c);
-			}
-			return implode(' AND ', $conditions);
-		}
-		
-		return "({$conditions})";
 	}
 	
 	
 	
 	/**
-	 * Magical methods
+	 * Magical Methods
 	 */
 	public function __construct($data = array(), $exists = false) {
 		parent::__construct($data);
