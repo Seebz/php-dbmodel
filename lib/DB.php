@@ -75,7 +75,8 @@ class DB {
 			} elseif (stripos($query, ' INTO ')!== false) {
 				return mysql_insert_id(self::$_connection);
 			} else {
-				return mysql_affected_rows(self::$_connection);
+				//return mysql_affected_rows(self::$_connection);
+				return true;
 			}
 		} else {
 			$rows = array();

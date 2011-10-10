@@ -16,7 +16,7 @@ require_once '../DbModel.php';
 DB::Construct(array(
 	'host'     => 'localhost',
 	'user'     => 'root',
-	'pass'     => 'root',
+	'pass'     => '',
 	'database' => 'test',
 	'prefix'   => '',
 	'charset'  => 'utf8',
@@ -62,6 +62,9 @@ echo '<pre>';
 
 var_dump( Author::table_fields() );
 var_dump( Book::table_fields() );
+
+var_dump( Author::defaults_values() );
+var_dump( Book::defaults_values() );
 
 
 ?>

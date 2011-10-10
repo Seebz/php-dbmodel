@@ -160,8 +160,6 @@ abstract class DbModel extends Model {
 	// Permettra de savoir si l'objet existe en DB
 	protected $_exists = false;
 	
-	protected static $_table_prefixes = array();
-	protected static $_table_names    = array();
 	protected static $_table_fields   = array();
 	
 	
@@ -169,41 +167,30 @@ abstract class DbModel extends Model {
 	/**
 	 * Static methods
 	 */
-	public static function table_prefix() {
-		$class_name = get_called_class();
-		if (!isset(static::$_table_prefixes[ $class_name ])) {
-			static::$_table_prefixes[ $class_name ] = static::$table_prefix ?: 
-					DB::getPrefix();
-		}
-		return static::$_table_prefixes[ $class_name ];
+	static public function table() {
+		return DbTable::load( get_called_class() );
 	}
 	
-	public static function table_name() {
-		$class_name = get_called_class();
-		if (!isset(static::$_table_names[ $class_name ])) {
-			static::$_table_names[ $class_name ] = static::$table_name ?: 
-					Inflector::tableize($class_name);
-		}
-		return static::table_prefix() . static::$_table_names[ $class_name ];
+	static public function table_prefix() {
+		return static::table()->prefix();
 	}
 	
-	public static function primary_key() {
-		return static::$primary_key;
+	static public function table_name() {
+		return static::table()->name();
 	}
 	
-	public static function table_fields() {
-		$class_name = get_called_class();
-		if (!isset(static::$_table_fields[ $class_name ])) {
-			$query = sprintf('DESCRIBE %s', static::table_name());
-			
-			$result = DB::query($query);
-			foreach($result as $f) {
-				$fields[] = $f['Field'];
-			}
-			static::$_table_fields[ $class_name ] = $fields;
-		}
-		return static::$_table_fields[ $class_name ];
+	static public function primary_key() {
+		return static::table()->primary_key();
 	}
+	
+	static public function table_fields() {
+		return static::table()->fields();
+	}
+	
+	static public function defaults_values() {
+		return static::table()->defaults();
+	}
+	
 	
 	public static function get($id) {
 		return static::first(array(
