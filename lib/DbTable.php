@@ -93,6 +93,7 @@ class DbTable {
 			'join'       => '',
 			'conditions' => '1',
 			'groupby'    => null,
+			'having'     => null,
 			'sort'       => 'NULL',
 			'offset'     => null,
 			'page'       => 1,
@@ -104,11 +105,12 @@ class DbTable {
 		$join       = $this->_join($options['join']);
 		$conditions = $this->_conditions($options['conditions']);
 		$groupby    = $this->_groupby($options['groupby']);
+		$having     = $this->_having($options['having']);
 		$sort       = $this->_sort($options['sort']);
 		$limit      = $this->_limit($options['offset'], $options['page']);
 		
-		$query = sprintf('SELECT %s FROM %s%s WHERE %s%s ORDER BY %s%s',
-			$fields, $source, $join, $conditions, $groupby, $sort, $limit
+		$query = sprintf('SELECT %s FROM %s%s WHERE %s%s%s ORDER BY %s%s',
+			$fields, $source, $join, $conditions, $groupby, $having, $sort, $limit
 		);
 		$ret = DB::query($query);
 		
@@ -175,6 +177,11 @@ class DbTable {
 			return implode(', ', array_map(__METHOD__, $groupby, $level+1));
 		}
 		return ($level ? $groupby : " GROUP BY {$groupby}");
+	}
+	
+	protected function _having($having) {
+		// TODO
+		return $having;
 	}
 	
 	protected function _sort($sort) {
