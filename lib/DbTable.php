@@ -195,12 +195,12 @@ class DbTable {
 		return $sort;
 	}
 	
-	protected function _limit($offset, $page) {
-		if (!$offset) {
+	protected function _limit($limit, $page) {
+		if (!$limit) {
 			return '';
 		}
 		$page = max(0, $page);
-		return sprintf(' LIMIT %d,%d', (($page-1) * $offset), $offset);
+		return sprintf(' LIMIT %d,%d', (($page-1) * $limit), $limit);
 	}
 	
 	
