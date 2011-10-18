@@ -61,6 +61,7 @@ class Book extends DbModel {
 echo '<pre>';
 
 var_dump( Author::get(2) );
+
 var_dump( Book::first(array(
 	'conditions' => array(
 		'Author_Id' => 1,
