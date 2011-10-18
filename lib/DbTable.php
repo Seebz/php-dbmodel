@@ -95,10 +95,14 @@ class DbTable {
 			'groupby'    => null,
 			'having'     => null,
 			'sort'       => 'NULL',
-			'offset'     => null,
+			'limit'      => null,
 			'page'       => 1,
 		);
 		$options = $options + $defaults;
+		if (isset($options['offset'])) {
+			// Deprecated
+			$options['limit'] = $options['offset'];
+		}
 		
 		$fields     = $this->_fields($options['fields']);
 		$source     = $this->_source($options['source']);
@@ -107,7 +111,7 @@ class DbTable {
 		$groupby    = $this->_groupby($options['groupby']);
 		$having     = $this->_having($options['having']);
 		$sort       = $this->_sort($options['sort']);
-		$limit      = $this->_limit($options['offset'], $options['page']);
+		$limit      = $this->_limit($options['limit'], $options['page']);
 		
 		$query = sprintf('SELECT %s FROM %s%s WHERE %s%s%s ORDER BY %s%s',
 			$fields, $source, $join, $conditions, $groupby, $having, $sort, $limit

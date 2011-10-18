@@ -31,9 +31,9 @@ class Author extends DbModel {
 	
 	static $primary_key = 'author_id';
 	
+/*
 	static $validations = array(
 		'name' => array(
-/*
 			'presence'  => array('message' => "{FIELD_NAME} est obligatoire"),
 			'length'    => array(
 					array('message' => "{FIELD_NAME} est trop court (min {MIN} car.)", 'min' => 5),
@@ -41,13 +41,13 @@ class Author extends DbModel {
 				),
 			'inclusion' => array('in' => array('John', 'Jean')),
 			'exclusion' => array('in' => array('Admin', 'Administrator', 'Administrateur')),
-*/
 			'uniqueness' => array(),
 		),
 		'email' => array(
 			'format' => array('type' => 'email'),
 		),
 	);
+*/
 	
 }
 

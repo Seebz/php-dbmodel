@@ -221,8 +221,8 @@ abstract class DbModel extends Model {
 	}
 	
 	static public function first($options = array()) {
-		$options['offset'] = 1;
-		$options['page']   = 1;
+		$options['limit'] = 1;
+		$options['page']  = 1;
 		
 		$ret = static::find($options);
 		if (is_array($ret) && count($ret)) {
@@ -232,6 +232,7 @@ abstract class DbModel extends Model {
 		}
 	}
 	static public function find_first($options = array()) {
+		// Deprecated
 		return static::first($options);
 	}
 	
