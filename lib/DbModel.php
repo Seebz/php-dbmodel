@@ -79,28 +79,11 @@ abstract class DbModel extends Model {
 	}
 	
 	static public function count($options = array()) {
-		$default = array(
-			'fields' => static::primary_key(),
-		);
-		$options = $options + $default;
-		if (stripos($options['fields'], 'count') === false) {
-			$options['fields'] = "COUNT({$options['fields']})";
-		}
-		
-		$ret = static::first($options);
-		return (int) $ret->{$options['fields']};
+		return static::table()->count($options);
 	}
 	
 	static public function first($options = array()) {
-		$options['limit'] = 1;
-		$options['page']  = 1;
-		
-		$ret = static::find($options);
-		if (is_array($ret) && count($ret)) {
-			return $ret[0];
-		} else {
-			return $ret;
-		}
+		return static::table()->first($options);
 	}
 	static public function find_first($options = array()) {
 		// Deprecated

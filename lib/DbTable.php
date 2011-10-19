@@ -86,6 +86,21 @@ class DbTable {
 	/**
 	 * CRUD Methods
 	 */
+	
+	public function count(array $options = array()) {
+		$default = array(
+			'fields' => $this->primary_key(),
+		);
+		$options = $options + $default;
+		
+		if (stripos($options['fields'], 'count') === false) {
+			$options['fields'] = "COUNT({$options['fields']})";
+		}
+		
+		$ret = $this->first($options);
+		return (int) $ret->{$options['fields']};
+	}
+	
 	public function find(array $options = array()) {
 		$defaults = array(
 			'fields'     => '*',
@@ -123,6 +138,18 @@ class DbTable {
 		}
 		
 		return $ret;
+	}
+	
+	public function first(array $options = array()) {
+		$options['limit'] = 1;
+		$options['page']  = 1;
+		
+		$ret = $this->find($options);
+		if (is_array($ret) && count($ret)) {
+			return $ret[0];
+		} else {
+			return $ret;
+		}
 	}
 	
 	public function create($data = array()) {
