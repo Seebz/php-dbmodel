@@ -125,7 +125,7 @@ class DbTable {
 		return $ret;
 	}
 	
-	public function insert($data = array()) {
+	public function create($data = array()) {
 		$table_fields = $this->fields();
 		
 		foreach ($data as $f => $v) {
@@ -139,6 +139,33 @@ class DbTable {
 			$this->name(), implode(', ', $fields), implode(', ', $values)
 		);
 		
+		return DB::query($query);
+	}
+	
+	public function update($pk_value, $data = array()) {
+		$table_fields = $this->fields();
+		$pk_field     = $this->primary_key();
+		
+		foreach ($data as $f => $v) {
+			if (in_array($f, $table_fields) && $f != $pk_field) {
+				$sets[] = $this->_conditions(array($f => $v));
+			}
+		}
+		$condition = $this->_conditions(array($pk_field => $pk_value));
+		
+		$query = sprintf('UPDATE %s SET %s WHERE %s',
+			$this->name(), implode(', ', $sets), $condition
+		);
+		return DB::query($query);
+	}
+	
+	public function destroy($pk_value) {
+		$pk_field  = $this->primary_key();
+		$condition = $this->_conditions(array($pk_field => $pk_value));
+		
+		$query = sprintf('DELETE FROM %s WHERE %s',
+			$this->name(), $condition
+		);
 		return DB::query($query);
 	}
 	

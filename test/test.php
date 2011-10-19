@@ -61,13 +61,15 @@ class Book extends DbModel {
 echo '<pre>';
 
 
-$book = new Book(array(
-	'name' => 'My new book',
-));
+$book = new Book();
+$book->name = 'Temporary book';
+$book->save();
 
-var_dump( $book->save() );
 
-var_dump( $book->to_array() );
+
+$book = Book::first(array('sort' => 'book_id DESC'));
+
+var_dump( $book->destroy() );
 
 
 ?>

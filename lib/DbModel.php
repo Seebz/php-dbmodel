@@ -179,7 +179,7 @@ abstract class DbModel extends Model {
 			$this->_data['updated_at'] = date('Y-m-d H:i:s');
 		}
 		
-		$id = static::table()->insert($this->_data);
+		$id = static::table()->create($this->_data);
 		if ($id) {
 			$this->_data[ static::primary_key() ] = $id;
 			$this->_exists = true;
@@ -194,28 +194,15 @@ abstract class DbModel extends Model {
 		if ($validate && !$this->validate()) {
 			return false;
 		}
-		$table_fields = static::table_fields();
 		
 		$this->_run_callback('before_update');
 		
+		$table_fields = static::table_fields();
 		if (in_array('updated_at', $table_fields)) {
 			$this->_data['updated_at'] = date('Y-m-d H:i:s');
 		}
 		
-		foreach ($this->_data as $f=>$v) {
-			if (in_array($f, $table_fields)) {
-				$sets[] = sprintf("%s='%s'", $f, DB::escape($v));
-			}
-		}
-		if (count($sets)) {
-			$query = sprintf("UPDATE %s SET %s WHERE %s='%s'",
-				static::table_name(),
-				implode(', ', $sets),
-				static::primary_key(),
-				$this->get_pk()
-			);
-			$ret = DB::query($query);
-		}
+		$ret = static::table()->update($this->pk, $this->_data);
 		
 		$this->_run_callback('after_update');
 		
@@ -226,15 +213,11 @@ abstract class DbModel extends Model {
 		
 		$this->_run_callback('before_destroy');
 		
-		$ret = sprintf("DELETE FROM %s WHERE %s='%s'",
-				static::table_name(),
-				static::primary_key(),
-				$this->get_pk()
-		);
+		$ret = static::table()->destroy($this->pk);
 		
 		$this->_run_callback('after_destroy');
 		
-		return DB::query($ret);
+		return $ret;
 	}
 	
 	
