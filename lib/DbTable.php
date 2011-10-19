@@ -86,22 +86,7 @@ class DbTable {
 	/**
 	 * CRUD Methods
 	 */
-	
-	public function count(array $options = array()) {
-		$default = array(
-			'fields' => $this->primary_key(),
-		);
-		$options = $options + $default;
-		
-		if (stripos($options['fields'], 'count') === false) {
-			$options['fields'] = "COUNT({$options['fields']})";
-		}
-		
-		$ret = $this->first($options);
-		return (int) $ret->{$options['fields']};
-	}
-	
-	public function find(array $options = array()) {
+	public function find($what = 'all', array $options = array()) {
 		$defaults = array(
 			'fields'     => '*',
 			'source'     => $this->name(),
@@ -114,9 +99,12 @@ class DbTable {
 			'page'       => 1,
 		);
 		$options = $options + $defaults;
-		if (isset($options['offset'])) {
-			// Deprecated
-			$options['limit'] = $options['offset'];
+		
+		switch($what) {
+			case 'first':
+				$options['limit'] = 1;
+				$options['page']  = 1;
+				break;
 		}
 		
 		$fields     = $this->_fields($options['fields']);
@@ -137,19 +125,27 @@ class DbTable {
 			$r = new $this->_class_name($r, true);
 		}
 		
-		return $ret;
+		switch($what) {
+			case 'first':
+				return (is_array($ret) && count($ret) ? $ret[0] : $ret);
+				break;
+			default:
+				return $ret;
+		}
 	}
 	
-	public function first(array $options = array()) {
-		$options['limit'] = 1;
-		$options['page']  = 1;
+	public function count(array $options = array()) {
+		$default = array(
+			'fields' => $this->primary_key(),
+		);
+		$options = $options + $default;
 		
-		$ret = $this->find($options);
-		if (is_array($ret) && count($ret)) {
-			return $ret[0];
-		} else {
-			return $ret;
+		if (stripos($options['fields'], 'count') === false) {
+			$options['fields'] = "COUNT({$options['fields']})";
 		}
+		
+		$ret = $this->find('first', $options);
+		return (int) $ret->{$options['fields']};
 	}
 	
 	public function create($data = array()) {

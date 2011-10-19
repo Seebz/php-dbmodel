@@ -65,29 +65,26 @@ abstract class DbModel extends Model {
 	/**
 	 * Finder Methods
 	 */
-	static public function find(array $options = array()) {
-		return static::table()->find($options);
+	static public function find($what = 'all', array $options = array()) {
+		return static::table()->find($what, $options);
 	}
+	
 	static public function all(array $options = array()) {
-		return static::find($options);
+		return static::find('all', $options);
+	}
+	
+	static public function first(array $options = array()) {
+		return static::find('first', $options);
 	}
 	
 	static public function get($id) {
-		return static::first(array(
+		return static::find('first', array(
 			'conditions' => array(static::primary_key() => $id),
 		));
 	}
 	
-	static public function count($options = array()) {
+	static public function count(array $options = array()) {
 		return static::table()->count($options);
-	}
-	
-	static public function first($options = array()) {
-		return static::table()->first($options);
-	}
-	static public function find_first($options = array()) {
-		// Deprecated
-		return static::first($options);
 	}
 	
 	
@@ -95,7 +92,7 @@ abstract class DbModel extends Model {
 	/**
 	 * Magical Methods
 	 */
-	public function __construct($data = array(), $exists = false) {
+	public function __construct(array $data = array(), $exists = false) {
 		parent::__construct($data);
 		$this->_exists = $exists;
 	}
