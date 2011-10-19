@@ -84,7 +84,7 @@ class DbTable {
 	
 	
 	/**
-	 * Finder Methods
+	 * CRUD Methods
 	 */
 	public function find(array $options = array()) {
 		$defaults = array(
@@ -125,7 +125,28 @@ class DbTable {
 		return $ret;
 	}
 	
+	public function insert($data = array()) {
+		$table_fields = $this->fields();
+		
+		foreach ($data as $f => $v) {
+			if (in_array($f, $table_fields)) {
+				$fields[] = $f;
+				$values[] = $this->_escape_field_value($f, $v);
+			}
+		}
+		
+		$query = sprintf('INSERT INTO %s (%s) VALUES (%s)',
+			$this->name(), implode(', ', $fields), implode(', ', $values)
+		);
+		
+		return DB::query($query);
+	}
 	
+	
+	
+	/**
+	 * Protected Methods
+	 */
 	protected function _fields($fields) {
 		if (is_array($fields)) {
 			return implode(', ', array_map(__METHOD__, $fields));

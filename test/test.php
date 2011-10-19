@@ -60,14 +60,14 @@ class Book extends DbModel {
 // C'est parti !
 echo '<pre>';
 
-var_dump( Author::get(2) );
 
-var_dump( Book::first(array(
-	'conditions' => array(
-		'Author_Id' => 1,
-		'name'      => 'New book name',
-	),
-)) );
+$book = new Book(array(
+	'name' => 'My new book',
+));
+
+var_dump( $book->save() );
+
+var_dump( $book->to_array() );
 
 
 ?>

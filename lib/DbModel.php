@@ -168,10 +168,10 @@ abstract class DbModel extends Model {
 		if ($validate && !$this->validate()) {
 			return false;
 		}
-		$table_fields = static::table_fields();
 		
 		$this->_run_callback('before_create');
 		
+		$table_fields = static::table_fields();
 		if (in_array('created_at', $table_fields)) {
 			$this->_data['created_at'] = date('Y-m-d H:i:s');
 		}
@@ -179,29 +179,15 @@ abstract class DbModel extends Model {
 			$this->_data['updated_at'] = date('Y-m-d H:i:s');
 		}
 		
-		foreach ($this->_data as $f=>$v) {
-			if (in_array($f, $table_fields)) {
-				$fields[] = $f;
-				$values[] = DB::escape($v);
-			}
-		}
-		if (count($fields)) {
-			$query = sprintf('INSERT INTO %s (%s) VALUES (%s)',
-				static::table_name(),
-				implode(', ', $fields),
-				"'" . implode("', '", $values) . "'"
-			);
-			
-			$ret = DB::query($query);
-			if ($ret) {
-				$this->_data[ static::primary_key() ] = $ret;
-				$this->_exists = true;
-			}
+		$id = static::table()->insert($this->_data);
+		if ($id) {
+			$this->_data[ static::primary_key() ] = $id;
+			$this->_exists = true;
 		}
 		
 		$this->_run_callback('after_create');
 		
-		return (isset($ret) ? $ret : null);
+		return (isset($id) ? $id : null);
 	}
 	
 	public function update($validate = true) {
