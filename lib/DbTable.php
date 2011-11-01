@@ -94,7 +94,7 @@ class DbTable {
 			'conditions' => '1',
 			'groupby'    => null,
 			'having'     => null,
-			'sort'       => 'NULL',
+			'sort'       => null,
 			'limit'      => null,
 			'page'       => 1,
 		);
@@ -104,6 +104,19 @@ class DbTable {
 			case 'first':
 				$options['limit'] = 1;
 				$options['page']  = 1;
+				break;
+			case 'last':
+				$options['limit'] = 1;
+				$options['page']  = 1;
+				if ($options['sort']) {
+					$sort = $this->_sort($options['sort']);
+					$sort = preg_replace('`[\s]DESC`i', '!asc!', $sort);
+					$sort = preg_replace('`[\s]ASC`i', ' DESC', $sort);
+					$sort = str_replace('!asc!', ' ASC', $sort);
+					$options['sort'] = $sort;
+				} else {
+					$options['sort'] = '-' . $this->primary_key();
+				}
 				break;
 		}
 		
@@ -127,6 +140,7 @@ class DbTable {
 		
 		switch($what) {
 			case 'first':
+			case 'last':
 				return (is_array($ret) && count($ret) ? $ret[0] : $ret);
 				break;
 			default:
@@ -260,8 +274,21 @@ class DbTable {
 	}
 	
 	protected function _sort($sort) {
+		if (!$sort) {
+			return 'NULL';
+		}
+		if (is_string($sort) && strpos($sort, ',') !== false) {
+			$sort = explode(',', $sort);
+		}
 		if (is_array($sort)) {
+			$sort = array_map('trim', $sort);
+			$sort = array_filter($sort);
 			return implode(', ', array_map(__METHOD__, $sort));
+		} elseif (!preg_match('`[\s](ASC|DESC)`i', $sort)) {
+			$sort = sprintf('%s %s',
+				ltrim($sort, '-'),
+				(strpos($sort, '-') === 0 ? 'DESC' : 'ASC')
+			);
 		}
 		return $sort;
 	}

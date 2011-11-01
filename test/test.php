@@ -61,7 +61,8 @@ class Book extends DbModel {
 echo '<pre>';
 
 
-var_dump( Author::get(2) );
+echo( Author::first() );
+echo( Author::last() );
 
 
 ?>

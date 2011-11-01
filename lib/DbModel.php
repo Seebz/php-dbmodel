@@ -77,6 +77,10 @@ abstract class DbModel extends Model {
 		return static::find('first', $options);
 	}
 	
+	static public function last(array $options = array()) {
+		return static::find('last', $options);
+	}
+	
 	static public function get($id) {
 		return static::find('first', array(
 			'conditions' => array(static::primary_key() => $id),
