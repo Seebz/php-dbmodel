@@ -4,7 +4,7 @@
 /**
  * Classe modèle de base
  */
-class Model implements ArrayAccess {
+class Model implements ArrayAccess, Serializable {
 	
 	protected $_vars = array();
 	
@@ -16,54 +16,13 @@ class Model implements ArrayAccess {
 		$this->update_attributes($vars);
 	}
 	
-	function __clone() {
+	public function __clone() {
 		foreach ($this as $key => $val) {
 			if (is_object($val) || (is_array($val))) {
 				$this->{$key} = unserialize(serialize($val));
 			}
 		}
 	}
-	
-	
-	public function & __get($key) {
-		$var = & $this->_read_attribute($key); return $var;
-	}
-	
-	public function __set($key, $value) {
-		$setter = 'set_' . $key;
-		if ( method_exists($this, $setter) ) {
-			return $this->$setter($value);
-		} else {
-			return $this->_vars[ $key ] = $value;
-		}
-	}
-	
-	public function __isset($key) {
-		return isset($this->_vars[ $key ]);
-	}
-	
-	public function __unset($key) {
-		unset($this->_vars[ $key ]);
-	}
-	
-	
-	public function & offsetGet($key) {
-		// You can return by reference in offsetGet as of PHP 5.3.4
-		$var = & $this->_read_attribute($key); return $var;
-	}
-	
-	public function offsetSet($key, $value) {
-		return $this->__set($key, $value);
-	}
-	
-	public function offsetExists($key) {
-		return $this->__isset($key);
-	}
-	
-	public function offsetUnset($key) {
-		return $this->__unset($key);
-	}
-	
 	
 	public function __toString() {
 		$kLength = 0;
@@ -86,15 +45,63 @@ class Model implements ArrayAccess {
 	}
 	
 	
+	public function & __get($key) {
+		return $var = & $this->_read_attribute($key);
+	}
+	
+	public function __set($key, $value) {
+		$setter = 'set_' . $key;
+		if ( method_exists($this, $setter) ) {
+			return $this->$setter($value);
+		} else {
+			return $this->_vars[ $key ] = $value;
+		}
+	}
+	
+	public function __isset($key) {
+		return isset($this->_vars[ $key ]);
+	}
+	
+	public function __unset($key) {
+		unset($this->_vars[ $key ]);
+	}
+	
+	
+	public function & offsetGet($key) {
+		// You can return by reference in offsetGet as of PHP 5.3.4
+		return $var = & $this->_read_attribute($key);
+	}
+	
+	public function offsetSet($key, $value) {
+		return $this->__set($key, $value);
+	}
+	
+	public function offsetExists($key) {
+		return $this->__isset($key);
+	}
+	
+	public function offsetUnset($key) {
+		return $this->__unset($key);
+	}
+	
+	
+	public function serialize() {
+		return serialize($this->_vars);
+	}
+	
+	public function unserialize($vars) {
+		$this->_vars = unserialize($vars);
+	}
+	
 	
 	/**
 	 * Usefull Methods
 	 */
 	public function & read_attribute($name) {
 		if (isset($this->_vars[ $name ])) {
-			$var = & $this->_vars[ $name ]; return $var;
+			return $var = & $this->_vars[ $name ];
 		}
-		$var = null; return $var;
+		return $var = null;
 	}
 	
 	public function write_attribute($name, $value = null) {
@@ -108,13 +115,12 @@ class Model implements ArrayAccess {
 	}
 	
 	public function to_array() {
-		return (array) $this->_vars;
+		return $this->_vars;
 	}
 	
 	public function to_json() {
 		return json_encode($this->to_array());
 	}
-	
 	
 	
 	/**
@@ -149,15 +155,15 @@ class Model implements ArrayAccess {
 	protected function & _read_attribute($key) {
 		$getter = 'get_' . $key;
 		if ( method_exists($this, $getter) ) {
-			$var = $this->$getter($key); return $var;
+			return $var = $this->$getter($key);
 		} elseif ( isset($this->_vars[ $key ]) ) {
-			$var = & $this->read_attribute($key); return $var;
+			return $var = & $this->read_attribute($key);
 		}
 		$this->_trigger_error(
 			sprintf('Undefined property: %s::$%s', get_class($this), $key),
 			E_USER_NOTICE
 		);
-		$var = null; return $var;
+		return $var = null;
 	}
 	
 	

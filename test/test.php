@@ -61,12 +61,28 @@ class Book extends DbModel {
 echo '<pre>';
 
 
-$last = Author::last(array('sort' => 'Author.name'));
-echo $last;
+$author = Author::last(array('sort' => 'Author.name'));
+echo $author;
 
 
-echo $last->undefined_property;
-echo $last['undefined_property'];
+echo '<hr>';
+
+
+print_r( $author->to_array() );
+
+
+echo '<hr>';
+
+
+echo $author->to_json();
+
+
+echo '<hr>';
+
+
+echo htmlspecialchars( $author->to_xml() );
+
+
 
 
 ?>

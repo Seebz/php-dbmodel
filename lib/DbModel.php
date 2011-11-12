@@ -101,13 +101,26 @@ abstract class DbModel extends Model {
 		$this->_exists = $exists;
 	}
 	
+	public function serialize() {
+		return serialize(array(
+			'vars'   => $this->_vars,
+			'exists' => $this->_exists,
+		));
+	}
+	
+	public function unserialize($data) {
+		$data = unserialize($data);
+		$this->_vars   = $data['vars'];
+		$this->_exists = $data['exists'];
+	}
+	
 	
 	
 	/**
 	 * Getters/Setters
 	 */
 	public function get_pk() {
-		return $this->_data[ static::primary_key() ];
+		return $this->read_attribute( static::primary_key() );
 	}
 	
 	public function get_id() {
