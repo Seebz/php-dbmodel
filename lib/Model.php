@@ -9,6 +9,7 @@ class Model implements ArrayAccess, Serializable {
 	protected $_vars = array();
 	
 	
+	
 	/**
 	 * Magical Methods
 	 */
@@ -94,6 +95,7 @@ class Model implements ArrayAccess, Serializable {
 	}
 	
 	
+	
 	/**
 	 * Usefull Methods
 	 */
@@ -122,6 +124,21 @@ class Model implements ArrayAccess, Serializable {
 		return json_encode($this->to_array());
 	}
 	
+	public function to_xml() {
+		$out[] = sprintf('<%s %s="%s">', get_class($this), static::primary_key(), $this->get_pk());
+		foreach($this->to_array() as $k => $v) {
+			if (strlen($v)) {
+				$out[] = "\t". sprintf('<%1$s>%2$s</%1$s>', $k, $v);
+			} else {
+				$out[] = "\t". sprintf('<%s/>', $k);
+			}
+		}
+		$out[] = sprintf('</%s>', get_class($this));
+		
+		return implode(PHP_EOL, $out);
+	}
+	
+	
 	
 	/**
 	 * Validations
@@ -147,6 +164,7 @@ class Model implements ArrayAccess, Serializable {
 	public function get_errors() {
 		return $this->_getValidator()->get_errors();
 	}
+	
 	
 	
 	/**
