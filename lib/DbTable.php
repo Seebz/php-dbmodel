@@ -75,7 +75,9 @@ class DbTable {
 			
 			$this->_defaults = array();
 			foreach($description as $d) {
-				$this->_defaults[ $d['Field'] ] = $d['Default'];
+				$field_name = $d['Field'];
+				$default    = $d['Default'];
+				$this->_defaults[ $field_name ] = $this->cast_field_value($field_name, $default);
 			}
 		}
 		return $this->_defaults;
@@ -84,7 +86,95 @@ class DbTable {
 	
 	
 	/**
-	 * CRUD Methods
+	 * Usefull Methods
+	 */
+	public function field_type($field_name) {
+		$description = $this->description();
+		$Type = $description[$field_name]['Type'];
+		$type = current( explode('(', $Type) );
+		switch($type) {
+			case 'tinyint':
+				if (strpos($Type, '(1)')) {
+					return 'boolean';
+				}
+			case 'smallint':
+			case 'int':      return 'integer';
+			
+			case 'bigint':   return 'double';
+			case 'decimal':  return 'float';
+			
+			case 'date':
+			case 'time':
+			case 'datetime': return $type;
+			
+			case 'char':
+			case 'text';
+			case 'varchar':
+			default:         return 'string';
+		}
+	}
+	
+	public function cast_field_value($field_name, $value) {
+		if (is_null($value)) {
+			return null;
+		}
+		$type = $this->field_type($field_name);
+		$method = "cast_{$type}_value";
+		return $this->{$method}($value);
+	}
+	
+	public function cast_fields_value(array $values = array()) {
+		foreach($values as $field_name => $value) {
+			$values[ $field_name ] = $this->cast_field_value($field_name, $value);
+		}
+		return $values;
+	}
+	
+	public function cast_boolean_value($value) {
+		return (boolean) $value;
+	}
+	public function cast_integer_value($value) {
+		return (integer) $value;
+	}
+	public function cast_double_value($value) {
+		return (double) $value;
+	}
+	public function cast_float_value($value) {
+		return (float) $value;
+	}
+	public function cast_string_value($value) {
+		return (string) $value;
+	}
+	
+	public function escape_field_value($field_name, $value) {
+		if (is_null($value)) {
+			return 'NULL';
+		} else {
+			$value = $this->cast_field_value($field_name, $value);
+		}
+		$type = $this->field_type($field_name);
+		switch($type) {
+			case 'boolean':
+				return ($value === false ? 'false' : 'true');
+				break;
+			
+			case 'integer':
+			case 'double':
+			case 'float':
+				return (string) $value;
+				break;
+			
+			case 'string':
+			default:
+				return "'" . DB::escape($value) . "'";
+		}
+	}
+	
+	
+	
+	
+	/**
+	 * Queries Methods
 	 */
 	public function find($what = 'all', array $options = array()) {
 		$defaults = array(
@@ -135,7 +225,7 @@ class DbTable {
 		$ret = DB::query($query);
 		
 		foreach($ret as &$r) {
-			$r = new $this->_class_name($r, true);
+			$r = new $this->_class_name($this->cast_fields_value($r), true);
 		}
 		
 		switch($what) {
@@ -168,7 +258,7 @@ class DbTable {
 		foreach ($data as $f => $v) {
 			if (in_array($f, $table_fields)) {
 				$fields[] = $f;
-				$values[] = $this->_escape_field_value($f, $v);
+				$values[] = $this->escape_field_value($f, $v);
 			}
 		}
 		
@@ -241,10 +331,10 @@ class DbTable {
 				if (is_int($k)) {
 					$out[] = call_user_func(__METHOD__, $conditions);
 				} elseif (!is_array($v)) {
-					$out[] = sprintf('%s = %s', $k, $this->_escape_field_value($k, $v));
+					$out[] = sprintf('%s = %s', $k, $this->escape_field_value($k, $v));
 				} elseif (!empty($v)) {
 					foreach($v as $i => $c) {
-						$v[$i] = $this->_escape_field_value($k, $c);
+						$v[$i] = $this->escape_field_value($k, $c);
 					}
 					$out[] = sprintf('%s IN (%s)', $k, implode(', ', $v));
 				} else {
@@ -299,12 +389,6 @@ class DbTable {
 		}
 		$page = max(0, $page);
 		return sprintf(' LIMIT %d,%d', (($page-1) * $limit), $limit);
-	}
-	
-	
-	protected function _escape_field_value($field_name, $value) {
-		// TODO
-		return "'" . DB::escape($value) . "'";
 	}
 	
 }

@@ -96,8 +96,9 @@ abstract class DbModel extends Model {
 	/**
 	 * Magical Methods
 	 */
-	public function __construct(array $data = array(), $exists = false) {
-		parent::__construct($data);
+	public function __construct(array $vars = array(), $exists = false) {
+		$this->_vars = self::table()->defaults();
+		$this->update_attributes($vars);
 		$this->_exists = $exists;
 	}
 	
@@ -170,15 +171,15 @@ abstract class DbModel extends Model {
 		
 		$table_fields = static::table_fields();
 		if (in_array('created_at', $table_fields)) {
-			$this->_data['created_at'] = date('Y-m-d H:i:s');
+			$this->_vars['created_at'] = date('Y-m-d H:i:s');
 		}
 		if (in_array('updated_at', $table_fields)) {
-			$this->_data['updated_at'] = date('Y-m-d H:i:s');
+			$this->_vars['updated_at'] = date('Y-m-d H:i:s');
 		}
 		
-		$id = static::table()->create($this->_data);
+		$id = static::table()->create($this->_vars);
 		if ($id) {
-			$this->_data[ static::primary_key() ] = $id;
+			$this->_vars[ static::primary_key() ] = $id;
 			$this->_exists = true;
 		}
 		
@@ -196,10 +197,10 @@ abstract class DbModel extends Model {
 		
 		$table_fields = static::table_fields();
 		if (in_array('updated_at', $table_fields)) {
-			$this->_data['updated_at'] = date('Y-m-d H:i:s');
+			$this->_vars['updated_at'] = date('Y-m-d H:i:s');
 		}
 		
-		$ret = static::table()->update($this->pk, $this->_data);
+		$ret = static::table()->update($this->pk, $this->_vars);
 		
 		$this->_run_callback('after_update');
 		

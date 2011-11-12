@@ -61,27 +61,10 @@ class Book extends DbModel {
 echo '<pre>';
 
 
-$author = Author::last(array('sort' => 'Author.name'));
-echo $author;
+$book = Book::last();
 
 
-echo '<hr>';
-
-
-print_r( $author->to_array() );
-
-
-echo '<hr>';
-
-
-echo $author->to_json();
-
-
-echo '<hr>';
-
-
-echo htmlspecialchars( $author->to_xml() );
-
+var_dump( $book->to_array() );
 
 
 
