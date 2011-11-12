@@ -89,9 +89,9 @@ class DbTable {
 	public function find($what = 'all', array $options = array()) {
 		$defaults = array(
 			'fields'     => '*',
-			'source'     => $this->name(),
+			'source'     => sprintf('%s AS %s', $this->name(), $this->_class_name),
 			'join'       => '',
-			'conditions' => '1',
+			'conditions' => true,
 			'groupby'    => null,
 			'having'     => null,
 			'sort'       => null,
@@ -243,8 +243,8 @@ class DbTable {
 				} elseif (!is_array($v)) {
 					$out[] = sprintf('%s = %s', $k, $this->_escape_field_value($k, $v));
 				} elseif (!empty($v)) {
-					foreach($v as &$c) {
-						$c = $this->_escape_field_value($k, $c);
+					foreach($v as $i => $c) {
+						$v[$i] = $this->_escape_field_value($k, $c);
 					}
 					$out[] = sprintf('%s IN (%s)', $k, implode(', ', $v));
 				} else {

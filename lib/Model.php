@@ -54,7 +54,7 @@ class Model {
 			$l = strlen($k);
 			if ($l>$kLength) { $kLength = $l; }
 		}
-		$out = array( sprintf('[%s Model]', get_class($this)) );
+		$out = array( sprintf('[Model %s]', get_class($this)) );
 		foreach($this->_data as $k => $v) {
 			if ($v === true)	$v = 'True';
 			if ($v === false)	$v = 'False';

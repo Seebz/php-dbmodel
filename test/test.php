@@ -61,8 +61,8 @@ class Book extends DbModel {
 echo '<pre>';
 
 
-echo( Author::first() );
-echo( Author::last() );
+echo( Author::first(array('sort' => 'Author.name')) );
+echo( Author::last(array('sort' => 'Author.name')) );
 
 
 ?>
