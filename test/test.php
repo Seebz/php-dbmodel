@@ -61,8 +61,12 @@ class Book extends DbModel {
 echo '<pre>';
 
 
-echo( Author::first(array('sort' => 'Author.name')) );
-echo( Author::last(array('sort' => 'Author.name')) );
+$last = Author::last(array('sort' => 'Author.name'));
+echo $last;
+
+
+echo $last->undefined_property;
+echo $last['undefined_property'];
 
 
 ?>

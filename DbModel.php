@@ -2,8 +2,8 @@
 
 
 // Vérification de la version PHP
-if (!defined('PHP_VERSION_ID') || PHP_VERSION_ID < 50300) {
-	die('PHP DbModel nécessite au minimum PHP 5.3');
+if (!defined('PHP_VERSION_ID') || PHP_VERSION_ID < 50304) {
+	die('PHP DbModel nécessite au minimum PHP 5.3.4');
 }
 
 
