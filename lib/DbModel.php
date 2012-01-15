@@ -9,6 +9,7 @@ abstract class DbModel extends Model {
 	static $table_prefix = null;
 	static $table_name   = '';
 	static $primary_key  = 'id';
+	static $connection   = 'default';
 	
 	
 	// Callbacks
@@ -58,6 +59,10 @@ abstract class DbModel extends Model {
 	
 	static public function defaults_values() {
 		return static::table()->defaults();
+	}
+	
+	static public function connection() {
+		return static::table()->connection();
 	}
 	
 	

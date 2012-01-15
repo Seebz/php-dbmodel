@@ -14,6 +14,7 @@ class DbTable {
 	protected $_prefix      = null;
 	protected $_name        = null;
 	protected $_primary_key = null;
+	protected $_connection  = null;
 	protected $_description = null;
 	protected $_defaults    = null;
 	
@@ -30,9 +31,17 @@ class DbTable {
 	public function __construct($class_name) {
 		$this->_class_name = $class_name;
 		
-		$this->_prefix = ( $class_name::$table_prefix ?: DB::getPrefix() );
+		$this->_connection  = DbConnection::get($class_name::$connection);
+		
+		$this->_prefix = ( $class_name::$table_prefix ?: $this->connection()->prefix() );
 		$this->_name   = $this->_prefix . ( $class_name::$table_name ?: Inflector::tableize($class_name) );
 		$this->_primary_key = $class_name::$primary_key;
+	}
+	
+	
+	
+	public function connection() {
+		return $this->_connection;
 	}
 	
 	
@@ -55,7 +64,7 @@ class DbTable {
 	public function description() {
 		if (is_null($this->_description)) {
 			$query = sprintf('DESCRIBE %s', $this->name());
-			$results = DB::query($query);
+			$results = $this->connection()->query($query);
 			
 			$this->_description = array();
 			foreach($results as $r) {
@@ -166,7 +175,7 @@ class DbTable {
 			
 			case 'string':
 			default:
-				return "'" . DB::escape($value) . "'";
+				return "'" . $this->connection()->escape($value) . "'";
 		}
 	}
 	
@@ -222,7 +231,7 @@ class DbTable {
 		$query = sprintf('SELECT %s FROM %s%s WHERE %s%s%s ORDER BY %s%s',
 			$fields, $source, $join, $conditions, $groupby, $having, $sort, $limit
 		);
-		$ret = DB::query($query);
+		$ret = $this->connection()->query($query);
 		
 		foreach($ret as &$r) {
 			$r = new $this->_class_name($this->cast_fields_value($r), true);
@@ -266,7 +275,7 @@ class DbTable {
 			$this->name(), implode(', ', $fields), implode(', ', $values)
 		);
 		
-		return DB::query($query);
+		return $this->connection()->query($query);
 	}
 	
 	public function update($pk_value, $data = array()) {
@@ -283,7 +292,7 @@ class DbTable {
 		$query = sprintf('UPDATE %s SET %s WHERE %s',
 			$this->name(), implode(', ', $sets), $condition
 		);
-		return DB::query($query);
+		return $this->connection()->query($query);
 	}
 	
 	public function destroy($pk_value) {
@@ -293,7 +302,7 @@ class DbTable {
 		$query = sprintf('DELETE FROM %s WHERE %s',
 			$this->name(), $condition
 		);
-		return DB::query($query);
+		return $this->connection()->query($query);
 	}
 	
 	

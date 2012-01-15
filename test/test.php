@@ -13,7 +13,7 @@ require_once '../DbModel.php';
 
 // Initialisation de la DB
 // (à faire dans un fichier config-database.php par ex)
-DB::Construct(array(
+DbConnection::add('default', array(
 	'host'     => 'localhost',
 	'user'     => 'root',
 	'pass'     => 'root',
