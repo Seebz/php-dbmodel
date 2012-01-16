@@ -47,7 +47,8 @@ class Model implements ArrayAccess, Serializable {
 	
 	
 	public function & __get($key) {
-		return $var = & $this->_read_attribute($key);
+		$ret = & $this->_read_attribute($key);
+		return $var = & $ret;
 	}
 	
 	public function __set($key, $value) {
@@ -173,7 +174,8 @@ class Model implements ArrayAccess, Serializable {
 	protected function & _read_attribute($key) {
 		$getter = 'get_' . $key;
 		if ( method_exists($this, $getter) ) {
-			return $var = $this->$getter($key);
+			$ret = $this->$getter($key);
+			return $var = & $ret;
 		} elseif ( isset($this->_vars[ $key ]) ) {
 			return $var = & $this->read_attribute($key);
 		}

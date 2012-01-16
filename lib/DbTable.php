@@ -99,7 +99,11 @@ class DbTable {
 	 */
 	public function field_type($field_name) {
 		$description = $this->description();
-		$Type = $description[$field_name]['Type'];
+		if (isset($description[$field_name]['Type'])) {
+			$Type = $description[$field_name]['Type'];
+		} else {
+			$Type = 'default';
+		}
 		$type = current( explode('(', $Type) );
 		switch($type) {
 			case 'tinyint':
@@ -107,6 +111,7 @@ class DbTable {
 					return 'boolean';
 				}
 			case 'smallint':
+			case 'mediumint':
 			case 'int':      return 'integer';
 			
 			case 'bigint':   return 'double';
@@ -338,7 +343,7 @@ class DbTable {
 			$out = array();
 			foreach($conditions as $k => $v) {
 				if (is_int($k)) {
-					$out[] = call_user_func(__METHOD__, $conditions);
+					$out[] = call_user_func(__METHOD__, $v);
 				} elseif (!is_array($v)) {
 					$out[] = sprintf('%s = %s', $k, $this->escape_field_value($k, $v));
 				} elseif (!empty($v)) {

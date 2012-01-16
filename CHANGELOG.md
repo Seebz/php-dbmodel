@@ -1,14 +1,14 @@
-## 0.3
+## 0.3.1
 
 Features:
 
-  - export basique en XML vias la méthode `to_xml()`
+  - export basique en XML via la méthode `to_xml()`
   - support de connections multiples
 
 Changes:
 
   - initialisation d'un objet avec les valeurs par défaut des champs de la table
-  - `Casting` des propriétés des modèlesls selon leur type
+  - `Casting` des propriétés des modèles selon leur type
   - implémentation de l'interface Serialize dans les modèles
   - amélioration des accès aux propriétés de modèles (ArrayAccess, références)
   - amélioration de la classe `DbTable`
