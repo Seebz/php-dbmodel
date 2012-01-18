@@ -1,3 +1,9 @@
+## Next Release
+
+Bugfixes:
+
+  - correction du bug avec les espaces de noms
+
 ## 0.3.1
 
 Features:

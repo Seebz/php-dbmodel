@@ -34,7 +34,7 @@ class DbTable {
 		$this->_connection  = DbConnection::get($class_name::$connection);
 		
 		$this->_prefix = ( $class_name::$table_prefix ?: $this->connection()->prefix() );
-		$this->_name   = $this->_prefix . ( $class_name::$table_name ?: Inflector::tableize($class_name) );
+		$this->_name   = $this->_prefix . ( $class_name::$table_name ?: Inflector::tableize(Inflector::demodulize($class_name)) );
 		$this->_primary_key = $class_name::$primary_key;
 	}
 	
@@ -193,7 +193,7 @@ class DbTable {
 	public function find($what = 'all', array $options = array()) {
 		$defaults = array(
 			'fields'     => '*',
-			'source'     => sprintf('%s AS %s', $this->name(), $this->_class_name),
+			'source'     => sprintf('%s AS %s', $this->name(), Inflector::demodulize($this->_class_name)),
 			'join'       => '',
 			'conditions' => true,
 			'groupby'    => null,
