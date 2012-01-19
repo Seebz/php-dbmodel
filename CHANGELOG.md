@@ -1,8 +1,9 @@
-## Next Release
+## 0.3.2
 
 Bugfixes:
 
   - correction du bug avec les espaces de noms
+  - ajout des méthodes de casting 'date|time|datetime' manquantes
 
 ## 0.3.1
 
