@@ -160,6 +160,28 @@ class DbTable {
 		return (string) $value;
 	}
 	
+	public function cast_date_value($value) {
+		$value = (string) $value;
+		if (!is_numeric($value)) {
+			$value = strtotime($value);
+		}
+		return date('Y-m-d', $value);
+	}
+	public function cast_time_value($value) {
+		$value = (string) $value;
+		if (!is_numeric($value)) {
+			$value = strtotime($value);
+		}
+		return date('H:i:s', $value);
+	}
+	public function cast_datetime_value($value) {
+		$value = (string) $value;
+		if (!is_numeric($value)) {
+			$value = strtotime($value);
+		}
+		return date('Y-m-d H:i:s', $value);
+	}
+	
 	public function escape_field_value($field_name, $value) {
 		if (is_null($value)) {
 			return 'NULL';

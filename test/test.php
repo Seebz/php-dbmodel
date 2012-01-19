@@ -61,10 +61,10 @@ class Book extends DbModel {
 echo '<pre>';
 
 
-$book = Book::last();
+$author = Author::last();
+$author->save();
 
-
-var_dump( $book->to_array() );
+var_dump( $author->to_array() );
 
 
 
