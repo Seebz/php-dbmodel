@@ -3,12 +3,12 @@
 
 class Inflector {
 	
-	public static  $plural_rules   = array();
-	public static  $singular_rules = array();
+	static public $plural_rules   = array();
+	static public $singular_rules = array();
 	
 	
 	// Copyright (c) 2005 Flinn Mueller (MIT License)
-	private static $_plural_rules   = array(
+	static protected $_plural_rules   = array(
 		'/^(ox)$/i'                => '\1\2en',     // ox
 		'/([m|l])ouse$/i'          => '\1ice',      // mouse, louse
 		'/(matr|vert|ind)ix|ex$/i' => '\1ices',     // matrix, vertex, index
@@ -31,7 +31,7 @@ class Inflector {
 		'/$/i'                     => 's',
 	);
 	// Copyright (c) 2005 Flinn Mueller (MIT License)
-	private static $_singular_rules = array(
+	static protected $_singular_rules = array(
 		'/(matr)ices$/i'           => '\1ix',
 		'/(vert|ind)ices$/i'       => '\1ex',
 		'/^(ox)en/i'               => '\1',
@@ -61,10 +61,9 @@ class Inflector {
 		'/s$/i'                    => '',
 	);
 	
-	
 	// Cache
-	private static $_plural_caches   = array();
-	private static $_singular_caches = array();
+	static protected $_plural_caches   = array();
+	static protected $_singular_caches = array();
 	
 	
 	
@@ -74,7 +73,7 @@ class Inflector {
 	 * camelize("active_record/errors")  =>  "ActiveRecord::Errors"
 	 * camelize("active_record/errors", false)  =>  "activeRecord::Errors"
 	 */
-	public static function camelize($lower_case_and_underscored_word, $ucfirst=true) {
+	static public function camelize($lower_case_and_underscored_word, $ucfirst=true) {
 		$out = str_replace(array('_','/'), array(' ',"\t"), $lower_case_and_underscored_word);
 		$out = ucwords($out);
 		$out = str_replace(array(' ',"\t"), array('','::'), $out);
@@ -90,7 +89,7 @@ class Inflector {
 	 * classify("egg_and_hams")  =>  "EggAndHam"
 	 * classify("posts")  =>  "Post"
 	 */
-	public static function classify($table_name) {
+	static public function classify($table_name) {
 		return self::camelize(self::singularize($table_name));
 	}
 	
@@ -101,14 +100,14 @@ class Inflector {
 	 * constantize("Class")  =>  "Class"
 	 */
 	// Pas compris l'utilité  -  http://api.rubyonrails.org/classes/Inflector.html
-	public static function constantize($camel_cased_word) {}
+	static public function constantize($camel_cased_word) {}
 	
 	
 	
 	/*
 	 * dasherize("puni_puni")  =>  "puni-puni"
 	 */
-	public static function dasherize($underscored_word) {
+	static public function dasherize($underscored_word) {
 		return str_replace('_', '-', $underscored_word);
 	}
 	
@@ -118,8 +117,7 @@ class Inflector {
 	 * demodulize("ActiveRecord\CoreExtensions\String\Inflections")  =>  "Inflections"
 	 * demodulize("Inflections")  =>  "Inflections"
 	 */
-	public static function demodulize($class_name_in_module) {
-		//$str = explode('::', $class_name_in_module);
+	static public function demodulize($class_name_in_module) {
 		$str = explode('\\', $class_name_in_module);
 		return array_pop($str);
 	}
@@ -129,9 +127,9 @@ class Inflector {
 	/*
 	 * foreign_key("Message")  =>  "message_id"
 	 * foreign_key("Message", false)  =>  "messageid"
-	 * foreign_key("Admin::Post")  =>  "post_id"
+	 * foreign_key("Admin\Post")  =>  "post_id"
 	 */
-	public static function foreign_key($class_name, $separate_class_name_and_id_with_underscore=true) {
+	static public function foreign_key($class_name, $separate_class_name_and_id_with_underscore=true) {
 		$out  = self::underscore(self::demodulize($class_name));
 		$out .= $separate_class_name_and_id_with_underscore ? '_id' : 'id';
 		return $out;
@@ -143,7 +141,7 @@ class Inflector {
 	 * humanize("employee_salary")  =>  ("Employee salary")
 	 * humanize("author_id")  =>  ("Author")
 	 */
-	public static function humanize($string) {
+	static public function humanize($string) {
 		$out = str_replace('_', ' ', str_replace(array('_ids', '_id'), '', $string));
 		return ucfirst(trim($out));
 	}
@@ -156,7 +154,7 @@ class Inflector {
 	 * ordinalize(1002)  =>  "1002nd"
 	 * ordinalize(1003)  =>  "1003rd"
 	 */
-	public static function ordinalize($number) {
+	static public function ordinalize($number) {
 		if ($number%100<14 && $number%100>10) {
 			return $number.'th';
 		} else {
@@ -179,7 +177,7 @@ class Inflector {
 	 * pluralize("the blue mailman")  =>  "the blue mailmen"
 	 * pluralize("CamelOctopus")  =>  "CamelOctopi"
 	 */
-	public static function pluralize($word) {
+	static public function pluralize($word) {
 		$result = (string)$word;
 		
 		if (isset(self::$_plural_caches[$word])) {
@@ -208,7 +206,7 @@ class Inflector {
 	 * singularize("word")  =>  "word"
 	 * singularize("the blue mailmen")  =>  "the blue mailman"
 	 */
-	public static function singularize($word) {
+	static public function singularize($word) {
 		$result = (string)$word;
 		
 		if (isset(self::$_singular_caches[$word])) {
@@ -235,7 +233,7 @@ class Inflector {
 	 * tableize("egg_and_ham")  =>  "egg_and_hams"
 	 * tableize("fancyCategory")  =>  "fancy_categories"
 	 */
-	public static function tableize($class_name) {
+	static public function tableize($class_name) {
 		return self::pluralize(self::underscore($class_name));
 	}
 	
@@ -245,7 +243,7 @@ class Inflector {
 	 * titleize("man from the boondocks")  =>  "Man From The Boondocks"
 	 * titleize("x-men: the last stand")  =>  "X Men: The Last Stand"
 	 */
-	public static function titleize($word) {
+	static public function titleize($word) {
 		$out = str_replace('-', ' ', $word);
 		$out = self::humanize(self::underscore($out));
 		$out = ucwords($out);
@@ -258,7 +256,7 @@ class Inflector {
 	 * underscore("ActiveRecord")  =>  "active_record"
 	 * underscore("ActiveRecord::Errors")  =>  "active_record/errors"
 	 */
-	public static function underscore($string) {
+	static public function underscore($string) {
 		$out = preg_replace('`([A-Z]{1})`', '_\\1', $string);
 		$out = strtolower(trim($out, '_'));
 		$out = preg_replace('`::_?`', '/', $out);
