@@ -102,9 +102,11 @@ class Model implements ArrayAccess, Serializable {
 	 */
 	public function & read_attribute($name) {
 		if (isset($this->_vars[ $name ])) {
-			return $var = & $this->_vars[ $name ];
+			$ret = & $this->_vars[ $name ];
+			return $var = & $ret;
 		}
-		return $var = null;
+		$ret = null;
+		return $var = & $ret;
 	}
 	
 	public function write_attribute($name, $value = null) {
