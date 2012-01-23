@@ -172,8 +172,6 @@ abstract class DbModel extends Model {
 			return false;
 		}
 		
-		$this->_run_callback('before_create');
-		
 		$table_fields = static::table_fields();
 		if (in_array('created_at', $table_fields)) {
 			$this->_vars['created_at'] = date('Y-m-d H:i:s');
@@ -181,6 +179,8 @@ abstract class DbModel extends Model {
 		if (in_array('updated_at', $table_fields)) {
 			$this->_vars['updated_at'] = date('Y-m-d H:i:s');
 		}
+		
+		$this->_run_callback('before_create');
 		
 		$id = static::table()->create($this->_vars);
 		if ($id) {
@@ -198,12 +198,12 @@ abstract class DbModel extends Model {
 			return false;
 		}
 		
-		$this->_run_callback('before_update');
-		
 		$table_fields = static::table_fields();
 		if (in_array('updated_at', $table_fields)) {
 			$this->_vars['updated_at'] = date('Y-m-d H:i:s');
 		}
+		
+		$this->_run_callback('before_update');
 		
 		$ret = static::table()->update($this->pk, $this->_vars);
 		
