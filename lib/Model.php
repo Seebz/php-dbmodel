@@ -177,15 +177,16 @@ class Model implements ArrayAccess, Serializable {
 		$getter = 'get_' . $key;
 		if ( method_exists($this, $getter) ) {
 			$ret = $this->$getter($key);
-			return $var = & $ret;
 		} elseif ( isset($this->_vars[ $key ]) ) {
-			return $var = & $this->read_attribute($key);
+			$ret = & $this->read_attribute($key);
+		} else {
+			$this->_trigger_error(
+				sprintf('Undefined property: %s::$%s', get_class($this), $key),
+				E_USER_NOTICE
+			);
+			$ret = null;
 		}
-		$this->_trigger_error(
-			sprintf('Undefined property: %s::$%s', get_class($this), $key),
-			E_USER_NOTICE
-		);
-		return $var = null;
+		return $var = & $ret;
 	}
 	
 	
