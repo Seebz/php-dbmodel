@@ -103,9 +103,11 @@ class Model implements ArrayAccess, Serializable {
 	public function & read_attribute($name) {
 		if (isset($this->_vars[ $name ])) {
 			$ret = & $this->_vars[ $name ];
-			return $var = & $ret;
+		} elseif (property_exists($this, $name)) {
+			$ret = & $this->{$name};
+		} else {
+			$ret = null;
 		}
-		$ret = null;
 		return $var = & $ret;
 	}
 	
@@ -177,7 +179,7 @@ class Model implements ArrayAccess, Serializable {
 		$getter = 'get_' . $key;
 		if ( method_exists($this, $getter) ) {
 			$ret = $this->$getter($key);
-		} elseif ( isset($this->_vars[ $key ]) ) {
+		} elseif ( array_key_exists($key, $this->_vars) ) {
 			$ret = & $this->read_attribute($key);
 		} else {
 			$this->_trigger_error(

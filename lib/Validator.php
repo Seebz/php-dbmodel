@@ -22,6 +22,8 @@ class Validator {
 				'regexp' => '{FIELD_NAME} is not valid',
 			),
 		'uniqueness' => '{FIELD_NAME} must be unique',
+		
+		'confirmation_of' => "{FIELD_NAME} doesn't match confirmation",
 	);
 	
 		
@@ -158,6 +160,16 @@ class Validator {
 			$conditions[] = sprintf("%s <> '%s'", $class_name::primary_key(), $class_name::connection()->escape($object->get_pk()));
 		}
 		if ($class_name::first(compact('conditions'))) {
+			return $this->_errors[ $field_name ] = $this->_format_message($field_name, $message, $args);
+		}
+	}
+	
+	public function validates_confirmation_of($field_name, $field_value, $message, $args = array()) {
+		$object = $this->_object;
+		
+		$c_field = (isset($args['field']) ? $args['field'] : null);
+		$c_value = ($c_field && isset($object->{$c_field}) ? $object->{$c_field} : null );
+		if ($field_value !== $c_value) {
 			return $this->_errors[ $field_name ] = $this->_format_message($field_name, $message, $args);
 		}
 	}
