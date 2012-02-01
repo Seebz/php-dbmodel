@@ -132,7 +132,7 @@ class Validator {
 				$message = (is_array($message) && isset($message['email']) ? $message['email'] : $message);
 				break;
 			case 'ip':
-				$valid = filter_var($field_value, FILTER_VALIDATE_EMAIL);
+				$valid = filter_var($field_value, FILTER_VALIDATE_IP);
 				$message = (is_array($message) && isset($message['ip']) ? $message['ip'] : $message);
 				break;
 			case 'url':
@@ -187,7 +187,9 @@ class Validator {
 		
 		$rules = (array) $rules;
 		foreach($rules as $rule => $params) {
-			$this->_validate_field_by_rule($rule, $field_name, $field_value, $params);
+			if ( !empty($field_value) || !isset($params['skip_empty']) || !$params['skip_empty'] ) {
+				$this->_validate_field_by_rule($rule, $field_name, $field_value, $params);
+			}
 		}
 	}
 	
