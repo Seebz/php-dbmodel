@@ -158,6 +158,10 @@ class Model implements ArrayAccess, Serializable {
 		return $this->_validator;
 	}
 	
+	public function getValidationRules() {
+		return static::$validations;
+	}
+	
 	public function is_valid() {
 		return $this->_getValidator()->is_valid();
 	}

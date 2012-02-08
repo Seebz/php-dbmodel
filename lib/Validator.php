@@ -39,7 +39,7 @@ class Validator {
 		$class_name        = get_class($object);
 		$this->_object     = $object;
 		$this->_class_name = $class_name;
-		$this->_rules      = array_filter((array) $class_name::$validations);
+		$this->_rules      = $object->getValidationRules();
 	}
 	
 	
