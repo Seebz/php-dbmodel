@@ -199,7 +199,7 @@ class Validator {
 		
 		$rules = (array) $rules;
 		foreach($rules as $rule => $params) {
-			if ( !empty($field_value) || !isset($params['skip_empty']) || !$params['skip_empty'] ) {
+			if ( !empty($field_value) || !is_array($params) || !isset($params['skip_empty']) || !$params['skip_empty'] ) {
 				$this->_validate_field_by_rule($rule, $field_name, $field_value, $params);
 			}
 		}
