@@ -58,14 +58,14 @@ class DbConnection {
 	}
 	
 	public function connect() {
-		if (!($this->_connection = mysql_connect($this->_host, $this->_user, $this->_pass))) {
+		if (!($this->_connection = mysqli_connect($this->_host, $this->_user, $this->_pass))) {
 			return false;
 		}
-		if (!mysql_select_db($this->_database, $this->_connection)) {
+		if (!mysqli_select_db($this->_connection, $this->_database)) {
 			$this->_connection = null;
 			return false;
 		}
-		if (!empty($this->_charset) && !mysql_set_charset($this->_charset, $this->_connection)) {
+		if (!empty($this->_charset) && !mysqli_set_charset($this->_connection, $this->_charset)) {
 			$this->_connection = null;
 			return false;
 		}
@@ -78,7 +78,7 @@ class DbConnection {
 			$this->connect();
 		}
 		
-		return ($this->_connection ? mysql_real_escape_string($value, $this->_connection) : mysql_escape_string($value));
+		return mysqli_real_escape_string($this->_connection, $value);
 	}
 	
 	public function query($query) {
@@ -88,29 +88,29 @@ class DbConnection {
 		
 		if ($this->_debug) {
 			$this->_debug($query);
-			$ret = mysql_query($query);
+			$ret = mysqli_query($this->_connection, $query);
 			if (!$ret) {
-				$this->_debug(mysql_error(), 'darkred');
+				$this->_debug(mysqli_error($this->_connection), 'darkred');
 				exit;
 			}
 		} else {
-			$ret = mysql_query($query);
+			$ret = mysqli_query($this->_connection, $query);
 		}
 		
 		if (!$ret) {
 			return false;
 		} elseif ($ret === true) {
 			if (stripos($query, ' ON DUPLICATE ')!==false) {
-				return (boolean) mysql_affected_rows($this->_connection);
+				return (boolean) mysqli_affected_rows($this->_connection);
 			} elseif (stripos($query, ' INTO ')!== false) {
-				return mysql_insert_id($this->_connection);
+				return mysqli_insert_id($this->_connection);
 			} else {
 				//return mysql_affected_rows($this->_connection);
 				return true;
 			}
 		} else {
 			$rows = array();
-			while($row = mysql_fetch_assoc($ret)) {
+			while($row = mysqli_fetch_assoc($ret)) {
 				$rows[] = $row;
 			}
 			return $rows;
