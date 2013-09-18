@@ -1,3 +1,22 @@
+## 0.4
+
+Features
+
+  - ajout de la validation `confirmation_of`
+  - ajout de l'option de validation `skip_empty`
+
+Changes:
+
+  - utilisation de mysqli
+  - auto complétion des champs `created_at/updated_at` avant les action `before_create/before_save`
+
+Bugfixes:
+
+  - correction de la validation `uniqueness`
+  - correction des notices de passage par référence
+  - correction du bug `bypass des validations` avec PHP < 5.3
+
+
 ## 0.3.2
 
 Bugfixes:
