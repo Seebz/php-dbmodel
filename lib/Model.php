@@ -61,7 +61,7 @@ class Model implements ArrayAccess, Serializable {
 	}
 	
 	public function __isset($key) {
-		return isset($this->_vars[ $key ]);
+		return array_key_exists($key, $this->_vars);
 	}
 	
 	public function __unset($key) {
