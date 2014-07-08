@@ -48,7 +48,9 @@ class Model implements ArrayAccess, Serializable {
 	
 	public function & __get($key) {
 		$ret = & $this->_read_attribute($key);
-		return $var = & $ret;
+
+		$var = & $ret;
+		return $var;
 	}
 	
 	public function __set($key, $value) {
@@ -108,7 +110,9 @@ class Model implements ArrayAccess, Serializable {
 		} else {
 			$ret = null;
 		}
-		return $var = & $ret;
+
+		$var = & $ret;
+		return $var;
 	}
 	
 	public function write_attribute($name, $value = null) {
@@ -192,7 +196,9 @@ class Model implements ArrayAccess, Serializable {
 			);
 			$ret = null;
 		}
-		return $var = & $ret;
+
+		$var = & $ret;
+		return $var;
 	}
 	
 	
