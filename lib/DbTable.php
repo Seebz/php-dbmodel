@@ -362,6 +362,9 @@ class DbTable {
 	
 	protected function _conditions($conditions) {
 		if (is_array($conditions)) {
+			if (empty($conditions)) {
+				return true;
+			}
 			$out = array();
 			foreach($conditions as $k => $v) {
 				if (is_int($k)) {
